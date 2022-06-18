@@ -1,0 +1,114 @@
+package com.raiku.botutilities.configs;
+
+import com.raiku.botutilities.helpers.FileLoader;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+/**
+ * Handles config files by loading and writing configs from files
+ *
+ * @version 1.0 2022-18-06
+ * @since 1.0
+ */
+public class ConfigIO {
+
+	private static final Logger logger = LoggerFactory.getLogger(ConfigIO.class);
+	private static final String DEFAULT_DIRECTORY = "config";
+
+	/**
+	 * Returns the value of a config given a file name
+	 * @param fileName The name of the file to search in
+	 * @param configName The name of the config to search for
+	 * @return The config's value, else null
+	 */
+	public static String readConfig(String fileName, String configName) {
+		// Retrieve all files in DEFAULT_DIRECTORY
+		List<File> filesInFolder = null;
+		try (Stream<Path> paths = Files.walk(Paths.get("config"))) {
+			filesInFolder = paths
+				.filter(Files::isRegularFile)
+				.map(Path::toFile)
+				.collect(Collectors.toList());
+		} catch (IOException e) {
+			logger.error("An error occurred when getting paths from the " + DEFAULT_DIRECTORY + " folder");
+		}
+
+		if (filesInFolder == null) {
+			logger.warn("Config file " + fileName + " does not exist");
+			return null;
+		}
+
+		// Ensure that given fileName (including path) matches existing files
+		File foundFile = null;
+		String filePath;
+		for (File file : filesInFolder) {
+			filePath = file.getPath()
+				.substring(file.getPath().indexOf("\\") + 1)
+				.replace("\\", "/");
+
+			if (filePath.equals(fileName + ".cfg")) {
+				foundFile = file;
+				break;
+			}
+		}
+
+		if (foundFile == null) {
+			logger.warn("Config file " + fileName + " does not exist");
+			return null;
+		}
+
+		String readConfig = null;
+		for (String arrayString : FileLoader.readFileToArray(foundFile)) {
+			if (arrayString.toLowerCase().contains(configName.toLowerCase())) {
+				readConfig = arrayString;
+				break;
+			}
+		}
+
+		if (readConfig != null) {
+			return readConfig.split("=")[1].toLowerCase();
+		} else {
+			return null;
+		}
+	}
+
+	/**
+	 * Writes a config and its value into a given file name
+	 * @param fileName The name of the file to write to
+	 * @param configName The name of the config to write
+	 * @param configValue The value of the config to write
+	 */
+	public static void writeConfig(String fileName, String configName, String configValue) {
+		File file = new File(DEFAULT_DIRECTORY + "/" + fileName + ".cfg");
+
+		if (!file.exists()) {
+			logger.warn("Config file " + file.getName() + " does not exist");
+			return;
+		}
+
+		if (readConfig(fileName, configName) != null) {
+			logger.warn("Config setting " + configName + " already exists in config file " + file.getName());
+			return;
+		}
+
+		try {
+			BufferedWriter writer = new BufferedWriter(new FileWriter(file));
+			writer.write(configName + "=" + configValue);
+
+			writer.close();
+		} catch (IOException e) {
+			logger.error("Could not find file " + file.getName());
+		}
+	}
+}
