@@ -8,7 +8,7 @@ import java.util.List;
 /**
  * Provides interface for creating buttons
  *
- * @version 1.0 2022-18-06
+ * @version 1.1 2022-18-06
  * @since 1.0
  */
 public interface ButtonInterface {
@@ -42,5 +42,5 @@ public interface ButtonInterface {
 	 * @param ctx The button context to use to set embeds
 	 * @return The list of embed builders
 	 */
-	List<EmbedBuilder> setPages(ButtonContext ctx);
+	List<EmbedBuilder> getPages(ButtonContext ctx);
 }
