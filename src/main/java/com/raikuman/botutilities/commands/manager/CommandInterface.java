@@ -1,4 +1,4 @@
-package com.raiku.botutilities.commands.manager;
+package com.raikuman.botutilities.commands.manager;
 
 import java.util.List;
 

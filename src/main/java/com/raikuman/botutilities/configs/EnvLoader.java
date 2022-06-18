@@ -1,4 +1,4 @@
-package com.raiku.botutilities.configs;
+package com.raikuman.botutilities.configs;
 
 import io.github.cdimascio.dotenv.Dotenv;
 

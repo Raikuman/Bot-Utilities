@@ -1,4 +1,4 @@
-package com.raiku.botutilities.helpers;
+package com.raikuman.botutilities.helpers;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

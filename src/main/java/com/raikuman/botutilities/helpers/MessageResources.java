@@ -1,4 +1,4 @@
-package com.raiku.botutilities.helpers;
+package com.raikuman.botutilities.helpers;
 
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
