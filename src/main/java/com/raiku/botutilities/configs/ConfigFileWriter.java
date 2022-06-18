@@ -12,7 +12,7 @@ import java.util.*;
 /**
  * Writes default config files using the ConfigInterface class
  *
- * @version 1.0 2022-18-06
+ * @version 1.1 2022-18-06
  * @since 1.0
  */
 public class ConfigFileWriter {
@@ -82,7 +82,7 @@ public class ConfigFileWriter {
 	 * conflicting directories, the method will log
 	 * @param configInterfaces The list of config interfaces to write files
 	 */
-	public static void writeConfigFiles(List<ConfigInterface> configInterfaces) {
+	public static void writeConfigFiles(ConfigInterface... configInterfaces) {
 		// Check conflicting config directories
 		List<String> configDirectories = new ArrayList<>();
 		for (ConfigInterface configInterface : configInterfaces)
