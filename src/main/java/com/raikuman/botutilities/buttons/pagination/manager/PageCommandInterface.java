@@ -1,11 +1,13 @@
 package com.raikuman.botutilities.buttons.pagination.manager;
 
+import com.raikuman.botutilities.context.EventContext;
+
 import java.util.List;
 
 /**
  * Provides an interface for commands that use pagination
  *
- * @version 1.0 2022-19-06
+ * @version 1.1 2022-19-06
  * @since 1.0
  */
 public interface PageCommandInterface {
@@ -14,7 +16,7 @@ public interface PageCommandInterface {
 	 * Returns the list of strings that make up a page
 	 * @return The list of strings
 	 */
-	List<String> pageStrings();
+	List<String> pageStrings(EventContext ctx);
 
 	/**
 	 * Returns the number of items that a page should have
