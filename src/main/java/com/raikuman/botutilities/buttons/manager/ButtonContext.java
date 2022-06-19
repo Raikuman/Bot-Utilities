@@ -1,5 +1,6 @@
 package com.raikuman.botutilities.buttons.manager;
 
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.requests.restaction.interactions.MessageEditCallbackAction;
@@ -10,7 +11,7 @@ import java.util.List;
  * Holds the context of the class ButtonInteractionEvent and breaks it down to commonly used methods for
  * button interfaces to access
  *
- * @version 1.0 2022-18-06
+ * @version 1.1 2022-18-06
  * @since 1.0
  */
 public class ButtonContext {
@@ -43,5 +44,13 @@ public class ButtonContext {
 	 */
 	public List<Button> getButtons() {
 		return this.event.getMessage().getButtons();
+	}
+
+	/**
+	 * Returns the member who started the event
+	 * @return The member of the event
+	 */
+	public Member getEventMember() {
+		return this.event.getMember();
 	}
 }
