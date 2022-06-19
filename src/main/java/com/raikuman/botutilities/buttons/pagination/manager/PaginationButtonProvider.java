@@ -19,7 +19,7 @@ import java.util.List;
 /**
  * A button provider for pagination to offer button interfaces to the button manager
  *
- * @version 1.0 2022-19-06
+ * @version 1.1 2022-19-06
  * @since 1.0
  */
 public class PaginationButtonProvider {
@@ -71,7 +71,7 @@ public class PaginationButtonProvider {
 					return PaginationResources.buildEmbeds(
 						command.getInvoke(),
 						ctx.getEventMember().getAvatarUrl(),
-						pageCommandInterface.pageStrings(),
+						pageCommandInterface.pageStrings(ctx),
 						pageCommandInterface.itemsPerPage()
 					);
 				}
@@ -91,7 +91,7 @@ public class PaginationButtonProvider {
 					return PaginationResources.buildEmbeds(
 						command.getInvoke(),
 						ctx.getEventMember().getAvatarUrl(),
-						pageCommandInterface.pageStrings(),
+						pageCommandInterface.pageStrings(ctx),
 						pageCommandInterface.itemsPerPage()
 					);
 				}
@@ -116,7 +116,7 @@ public class PaginationButtonProvider {
 						return PaginationResources.buildEmbeds(
 							command.getInvoke(),
 							ctx.getEventMember().getAvatarUrl(),
-							pageCommandInterface.pageStrings(),
+							pageCommandInterface.pageStrings(ctx),
 							pageCommandInterface.itemsPerPage()
 						);
 					}
@@ -141,7 +141,7 @@ public class PaginationButtonProvider {
 						return PaginationResources.buildEmbeds(
 							command.getInvoke(),
 							ctx.getEventMember().getAvatarUrl(),
-							pageCommandInterface.pageStrings(),
+							pageCommandInterface.pageStrings(ctx),
 							pageCommandInterface.itemsPerPage()
 						);
 					}
