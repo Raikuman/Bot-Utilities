@@ -1,10 +1,10 @@
-package com.raiku.botutilities.commands;
+package com.raikuman.botutilities.commands;
 
-import com.raiku.botutilities.commands.manager.CommandInterface;
-import com.raiku.botutilities.commands.manager.CommandManager;
-import com.raiku.botutilities.configs.ConfigFileWriter;
-import com.raiku.botutilities.configs.ConfigIO;
-import com.raiku.botutilities.configs.defaults.DefaultConfig;
+import com.raikuman.botutilities.commands.manager.CommandInterface;
+import com.raikuman.botutilities.commands.manager.CommandManager;
+import com.raikuman.botutilities.configs.ConfigFileWriter;
+import com.raikuman.botutilities.configs.ConfigIO;
+import com.raikuman.botutilities.configs.defaults.DefaultConfig;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.ReadyEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;

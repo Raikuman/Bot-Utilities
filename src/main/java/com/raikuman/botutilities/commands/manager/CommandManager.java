@@ -1,6 +1,6 @@
-package com.raiku.botutilities.commands.manager;
+package com.raikuman.botutilities.commands.manager;
 
-import com.raiku.botutilities.configs.ConfigIO;
+import com.raikuman.botutilities.configs.ConfigIO;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

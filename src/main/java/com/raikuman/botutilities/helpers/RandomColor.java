@@ -1,4 +1,4 @@
-package com.raiku.botutilities.helpers;
+package com.raikuman.botutilities.helpers;
 
 import java.awt.*;
 import java.util.Random;

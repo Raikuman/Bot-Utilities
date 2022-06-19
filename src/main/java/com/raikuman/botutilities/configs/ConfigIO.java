@@ -1,6 +1,6 @@
-package com.raiku.botutilities.configs;
+package com.raikuman.botutilities.configs;
 
-import com.raiku.botutilities.helpers.FileLoader;
+import com.raikuman.botutilities.helpers.FileLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

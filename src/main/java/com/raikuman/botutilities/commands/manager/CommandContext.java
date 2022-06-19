@@ -1,4 +1,4 @@
-package com.raiku.botutilities.commands.manager;
+package com.raikuman.botutilities.commands.manager;
 
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;

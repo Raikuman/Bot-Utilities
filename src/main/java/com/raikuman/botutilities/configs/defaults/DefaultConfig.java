@@ -1,6 +1,6 @@
-package com.raiku.botutilities.configs.defaults;
+package com.raikuman.botutilities.configs.defaults;
 
-import com.raiku.botutilities.configs.ConfigInterface;
+import com.raikuman.botutilities.configs.ConfigInterface;
 
 import java.util.HashMap;
 import java.util.Map;

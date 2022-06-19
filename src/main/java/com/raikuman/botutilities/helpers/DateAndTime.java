@@ -1,4 +1,4 @@
-package com.raiku.botutilities.helpers;
+package com.raikuman.botutilities.helpers;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
