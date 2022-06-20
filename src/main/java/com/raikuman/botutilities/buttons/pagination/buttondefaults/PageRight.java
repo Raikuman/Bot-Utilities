@@ -4,6 +4,7 @@ import com.raikuman.botutilities.buttons.manager.ButtonContext;
 import com.raikuman.botutilities.buttons.manager.ButtonInterface;
 import com.raikuman.botutilities.buttons.pagination.manager.PageInterface;
 import com.raikuman.botutilities.buttons.pagination.PaginationResources;
+import com.raikuman.botutilities.context.EventContext;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Emoji;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
@@ -16,7 +17,7 @@ import java.util.List;
 /**
  * Handles going to the page right of a pagination
  *
- * @version 1.0 2022-19-06
+ * @version 1.1 2022-19-06
  * @since 1.0
  */
 public class PageRight implements ButtonInterface, PageInterface {
@@ -40,6 +41,11 @@ public class PageRight implements ButtonInterface, PageInterface {
 		if (loopPagination()) {
 			if (newPageNumber > getPages(ctx).size())
 				newPageNumber = 1;
+
+			if (newPageNumber == currentPageNumber) {
+				callbackAction.queue();
+				return;
+			}
 		} else {
 			if (newPageNumber == getPages(ctx).size())
 				buttonList
@@ -73,7 +79,7 @@ public class PageRight implements ButtonInterface, PageInterface {
 	}
 
 	@Override
-	public List<EmbedBuilder> getPages(ButtonContext ctx) {
+	public List<EmbedBuilder> getPages(EventContext ctx) {
 		return null;
 	}
 
