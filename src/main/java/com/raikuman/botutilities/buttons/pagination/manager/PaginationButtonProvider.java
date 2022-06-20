@@ -18,7 +18,7 @@ import java.util.List;
 /**
  * A button provider for pagination to offer button interfaces to the button manager
  *
- * @version 1.2 2022-19-06
+ * @version 1.3 2022-20-06
  * @since 1.0
  */
 public class PaginationButtonProvider {
@@ -67,7 +67,7 @@ public class PaginationButtonProvider {
 				public List<EmbedBuilder> getPages(EventContext ctx) {
 					return PaginationResources.buildEmbeds(
 						command.getInvoke(),
-						ctx.getEventMember().getAvatarUrl(),
+						ctx.getEventMember().getEffectiveAvatarUrl(),
 						pageCommandInterface.pageStrings(ctx),
 						pageCommandInterface.itemsPerPage()
 					);
@@ -87,7 +87,7 @@ public class PaginationButtonProvider {
 				public List<EmbedBuilder> getPages(EventContext ctx) {
 					return PaginationResources.buildEmbeds(
 						command.getInvoke(),
-						ctx.getEventMember().getAvatarUrl(),
+						ctx.getEventMember().getEffectiveAvatarUrl(),
 						pageCommandInterface.pageStrings(ctx),
 						pageCommandInterface.itemsPerPage()
 					);
@@ -109,7 +109,7 @@ public class PaginationButtonProvider {
 					public List<EmbedBuilder> getPages(EventContext ctx) {
 						return PaginationResources.buildEmbeds(
 							command.getInvoke(),
-							ctx.getEventMember().getAvatarUrl(),
+							ctx.getEventMember().getEffectiveAvatarUrl(),
 							pageCommandInterface.pageStrings(ctx),
 							pageCommandInterface.itemsPerPage()
 						);
@@ -131,7 +131,7 @@ public class PaginationButtonProvider {
 					public List<EmbedBuilder> getPages(EventContext ctx) {
 						return PaginationResources.buildEmbeds(
 							command.getInvoke(),
-							ctx.getEventMember().getAvatarUrl(),
+							ctx.getEventMember().getEffectiveAvatarUrl(),
 							pageCommandInterface.pageStrings(ctx),
 							pageCommandInterface.itemsPerPage()
 						);
