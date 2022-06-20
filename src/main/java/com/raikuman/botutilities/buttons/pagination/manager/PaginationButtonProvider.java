@@ -1,6 +1,5 @@
 package com.raikuman.botutilities.buttons.pagination.manager;
 
-import com.raikuman.botutilities.buttons.manager.ButtonContext;
 import com.raikuman.botutilities.buttons.manager.ButtonInterface;
 import com.raikuman.botutilities.buttons.pagination.PaginationResources;
 import com.raikuman.botutilities.buttons.pagination.buttondefaults.PageFirst;
@@ -8,18 +7,18 @@ import com.raikuman.botutilities.buttons.pagination.buttondefaults.PageHome;
 import com.raikuman.botutilities.buttons.pagination.buttondefaults.PageLeft;
 import com.raikuman.botutilities.buttons.pagination.buttondefaults.PageRight;
 import com.raikuman.botutilities.commands.manager.CommandInterface;
+import com.raikuman.botutilities.context.EventContext;
 import net.dv8tion.jda.api.EmbedBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
  * A button provider for pagination to offer button interfaces to the button manager
  *
- * @version 1.1 2022-19-06
+ * @version 1.2 2022-19-06
  * @since 1.0
  */
 public class PaginationButtonProvider {
@@ -60,14 +59,12 @@ public class PaginationButtonProvider {
 			return new ArrayList<>();
 		}
 
-		List<ButtonInterface> buttonInterfaces = Arrays.asList(
+		List<ButtonInterface> buttonInterfaces = new ArrayList<>();
+		buttonInterfaces.add(
 			new PageLeft(command.getInvoke()) {
 
 				@Override
-				public List<EmbedBuilder> getPages(ButtonContext ctx) {
-					if (ctx.getEvent().getGuild() == null)
-						return null;
-
+				public List<EmbedBuilder> getPages(EventContext ctx) {
 					return PaginationResources.buildEmbeds(
 						command.getInvoke(),
 						ctx.getEventMember().getAvatarUrl(),
@@ -80,14 +77,14 @@ public class PaginationButtonProvider {
 				public boolean loopPagination() {
 					return pageCommandInterface.loopPagination();
 				}
-			},
+			}
+		);
+
+		buttonInterfaces.add(
 			new PageRight(command.getInvoke()) {
 
 				@Override
-				public List<EmbedBuilder> getPages(ButtonContext ctx) {
-					if (ctx.getEvent().getGuild() == null)
-						return null;
-
+				public List<EmbedBuilder> getPages(EventContext ctx) {
 					return PaginationResources.buildEmbeds(
 						command.getInvoke(),
 						ctx.getEventMember().getAvatarUrl(),
@@ -109,10 +106,7 @@ public class PaginationButtonProvider {
 				new PageHome(command.getInvoke()) {
 
 					@Override
-					public List<EmbedBuilder> getPages(ButtonContext ctx) {
-						if (ctx.getEvent().getGuild() == null)
-							return null;
-
+					public List<EmbedBuilder> getPages(EventContext ctx) {
 						return PaginationResources.buildEmbeds(
 							command.getInvoke(),
 							ctx.getEventMember().getAvatarUrl(),
@@ -134,10 +128,7 @@ public class PaginationButtonProvider {
 				new PageFirst(command.getInvoke()) {
 
 					@Override
-					public List<EmbedBuilder> getPages(ButtonContext ctx) {
-						if (ctx.getEvent().getGuild() == null)
-							return null;
-
+					public List<EmbedBuilder> getPages(EventContext ctx) {
 						return PaginationResources.buildEmbeds(
 							command.getInvoke(),
 							ctx.getEventMember().getAvatarUrl(),

@@ -1,6 +1,6 @@
 package com.raikuman.botutilities.buttons.pagination.manager;
 
-import com.raikuman.botutilities.buttons.manager.ButtonContext;
+import com.raikuman.botutilities.context.EventContext;
 import net.dv8tion.jda.api.EmbedBuilder;
 
 import java.util.List;
@@ -8,7 +8,7 @@ import java.util.List;
 /**
  * Provides an interface for pagination buttons
  *
- * @version 1.0 2022-19-06
+ * @version 1.1 2022-19-06
  * @since 1.0
  */
 public interface PageInterface {
@@ -18,7 +18,7 @@ public interface PageInterface {
 	 * @param ctx The button context to use to set embeds
 	 * @return The list of embed builders
 	 */
-	List<EmbedBuilder> getPages(ButtonContext ctx);
+	List<EmbedBuilder> getPages(EventContext ctx);
 
 	/**
 	 * Returns a boolean on whether to loop around a pagination
