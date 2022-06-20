@@ -44,7 +44,7 @@ public class PaginationBuilder {
 	public List<EmbedBuilder> buildEmbeds() {
 		return PaginationResources.buildEmbeds(
 			invoke,
-			member.getAvatarUrl(),
+			member.getEffectiveAvatarUrl(),
 			paginationStrings,
 			itemsPerPage
 		);
