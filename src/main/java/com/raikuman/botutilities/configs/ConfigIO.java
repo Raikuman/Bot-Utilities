@@ -11,14 +11,17 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
  * Handles config files by loading and writing configs from files
  *
- * @version 1.0 2022-18-06
+ * @version 1.1 2022-23-06
  * @since 1.0
  */
 public class ConfigIO {
@@ -103,8 +106,54 @@ public class ConfigIO {
 		}
 
 		try {
-			BufferedWriter writer = new BufferedWriter(new FileWriter(file));
+			BufferedWriter writer = new BufferedWriter(new FileWriter(file, true));
 			writer.write(configName + "=" + configValue);
+
+			writer.close();
+		} catch (IOException e) {
+			logger.error("Could not find file " + file.getName());
+		}
+	}
+
+	/**
+	 * Overwrites a config settings value with a new config value
+	 * @param fileName The name of the file to write to
+	 * @param configName The name of the config to overwrite its value
+	 * @param configValue The value of the config to overwrite
+	 */
+	public static void overwriteConfig(String fileName, String configName, String configValue) {
+		File file = new File(DEFAULT_DIRECTORY + "/" + fileName + ".cfg");
+
+		if (!file.exists()) {
+			logger.warn("Config file " + file.getName() + " does not exist");
+			return;
+		}
+
+		if (readConfig(fileName, configName) == null) {
+			logger.warn("Config setting " + configName + " does not exist in config file " + file.getName());
+			return;
+		}
+
+		HashMap<String, String> configMap = new LinkedHashMap<>();
+		String[] config;
+		for (String string : FileLoader.readFileToArray(file)) {
+			config = string.split("=");
+			if (config.length != 2) {
+				logger.error("Error retrieving config settings from config file " + file.getName());
+				return;
+			}
+
+			configMap.put(config[0], config[1]);
+		}
+
+		configMap.replace(configName, configValue);
+
+		try {
+			BufferedWriter writer = new BufferedWriter(new FileWriter(file, false));
+
+			for (Map.Entry<String, String> entry : configMap.entrySet()) {
+				writer.write(entry.getKey() + "=" + entry.getValue());
+			}
 
 			writer.close();
 		} catch (IOException e) {
