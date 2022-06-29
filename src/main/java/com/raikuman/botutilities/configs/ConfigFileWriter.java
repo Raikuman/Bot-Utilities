@@ -12,7 +12,7 @@ import java.util.*;
 /**
  * Writes default config files using the ConfigInterface class
  *
- * @version 1.1 2022-18-06
+ * @version 1.2 2022-29-06
  * @since 1.0
  */
 public class ConfigFileWriter {
@@ -68,8 +68,10 @@ public class ConfigFileWriter {
 
 			BufferedWriter writer = new BufferedWriter(new FileWriter(file));
 
-			for (Map.Entry<String, String> config : configInterface.getConfigs().entrySet())
+			for (Map.Entry<String, String> config : configInterface.getConfigs().entrySet()) {
 				writer.write(config.getKey() + "=" + config.getValue());
+				writer.write("\n");
+			}
 
 			writer.close();
 		} catch (IOException e) {
