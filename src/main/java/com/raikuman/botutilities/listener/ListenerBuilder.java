@@ -2,6 +2,7 @@ package com.raikuman.botutilities.listener;
 
 import com.raikuman.botutilities.buttons.manager.ButtonInterface;
 import com.raikuman.botutilities.commands.manager.CommandInterface;
+import com.raikuman.botutilities.selectmenus.manager.SelectInterface;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 import java.util.ArrayList;
@@ -10,7 +11,7 @@ import java.util.List;
 /**
  * A listener manager builder to provide the listener manager to add to the JDA object
  *
- * @version 1.2 2022-30-06
+ * @version 1.1 2022-23-06
  * @since 1.0
  */
 public class ListenerBuilder {
@@ -18,11 +19,13 @@ public class ListenerBuilder {
 	private List<ListenerAdapter> listeners;
 	private List<CommandInterface> commands;
 	private List<ButtonInterface> buttons;
+	private List<SelectInterface> selects;
 
 	public ListenerBuilder() {
 		commands = new ArrayList<>();
 		buttons = new ArrayList<>();
 		listeners = new ArrayList<>();
+		selects = new ArrayList<>();
 	}
 
 	/**
@@ -55,6 +58,11 @@ public class ListenerBuilder {
 		return this;
 	}
 
+	public ListenerBuilder setSelects(List<SelectInterface> selects) {
+		this.selects = selects;
+		return this;
+	}
+
 	/**
 	 * Builds the listener manager from the builder
 	 * @return The listener manager object
@@ -63,7 +71,8 @@ public class ListenerBuilder {
 		return new ListenerManager(
 			listeners,
 			commands,
-			buttons
+			buttons,
+			selects
 		);
 	}
 }
