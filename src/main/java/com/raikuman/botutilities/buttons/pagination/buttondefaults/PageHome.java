@@ -2,7 +2,7 @@ package com.raikuman.botutilities.buttons.pagination.buttondefaults;
 
 import com.raikuman.botutilities.buttons.manager.ButtonContext;
 import com.raikuman.botutilities.buttons.manager.ButtonInterface;
-import com.raikuman.botutilities.buttons.pagination.manager.PageInterface;
+import com.raikuman.botutilities.buttons.pagination.manager.PageButtonInterface;
 import com.raikuman.botutilities.context.EventContext;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Emoji;
@@ -12,10 +12,10 @@ import java.util.List;
 /**
  * Handles going to the initial page of a selection menu
  *
- * @version 1.1 2022-19-06
+ * @version 1.2 2022-30-06
  * @since 1.0
  */
-public class PageHome implements ButtonInterface, PageInterface {
+public class PageHome implements ButtonInterface, PageButtonInterface {
 
 	private final String invoke;
 

@@ -2,6 +2,7 @@ package com.raikuman.botutilities.listener;
 
 import com.raikuman.botutilities.buttons.manager.ButtonInterface;
 import com.raikuman.botutilities.commands.manager.CommandInterface;
+import com.raikuman.botutilities.selectmenus.manager.SelectInterface;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 import java.util.ArrayList;
@@ -18,11 +19,13 @@ public class ListenerBuilder {
 	private List<ListenerAdapter> listeners;
 	private List<CommandInterface> commands;
 	private List<ButtonInterface> buttons;
+	private List<SelectInterface> selects;
 
 	public ListenerBuilder() {
 		commands = new ArrayList<>();
 		buttons = new ArrayList<>();
 		listeners = new ArrayList<>();
+		selects = new ArrayList<>();
 	}
 
 	/**
@@ -55,11 +58,21 @@ public class ListenerBuilder {
 		return this;
 	}
 
+	public ListenerBuilder setSelects(List<SelectInterface> selects) {
+		this.selects = selects;
+		return this;
+	}
+
 	/**
 	 * Builds the listener manager from the builder
 	 * @return The listener manager object
 	 */
 	public ListenerManager build() {
-		return new ListenerManager(listeners, commands, buttons);
+		return new ListenerManager(
+			listeners,
+			commands,
+			buttons,
+			selects
+		);
 	}
 }
