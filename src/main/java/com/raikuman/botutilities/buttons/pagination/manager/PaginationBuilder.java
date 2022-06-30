@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * A pagination builder to provide pagination and embeds
  *
- * @version 1.0 2022-19-06
+ * @version 1.1 2022-30-06
  * @since 1.0
  */
 public class PaginationBuilder {
@@ -34,7 +34,8 @@ public class PaginationBuilder {
 	 * @return The Pagination object
 	 */
 	public Pagination build() {
-		return new Pagination(invoke, member.getId(), loop);
+		int numPages = (int) Math.ceil(paginationStrings.size() / (double) itemsPerPage);
+		return new Pagination(invoke, member.getId(), loop, numPages);
 	}
 
 	/**

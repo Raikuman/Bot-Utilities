@@ -10,18 +10,20 @@ import net.dv8tion.jda.api.interactions.components.buttons.Button;
 /**
  * Created an object for pagination to provide buttons for an embed
  *
- * @version 1.0 2022-19-06
+ * @version 1.1 2022-30-06
  * @since 1.0
  */
 public class Pagination {
 
 	private final String invoke, userId;
 	private final boolean loop;
+	private final int numPages;
 
-	Pagination(String invoke, String userId, boolean loop) {
+	Pagination(String invoke, String userId, boolean loop, int numPages) {
 		this.invoke = invoke;
 		this.userId = userId;
 		this.loop = loop;
+		this.numPages = numPages;
 	}
 
 	/**
@@ -48,10 +50,16 @@ public class Pagination {
 	 */
 	public ItemComponent provideRight() {
 		PageRight pageRight = new PageRight(invoke);
-		return Button.secondary(
+
+		Button button = Button.secondary(
 			userId + ":" + pageRight.getButtonId(),
 			pageRight.getEmoji()
 		);
+
+		if (!loop && numPages == 1)
+			return button.asDisabled();
+
+		return button;
 	}
 
 	/**
@@ -60,10 +68,16 @@ public class Pagination {
 	 */
 	public ItemComponent provideFirst() {
 		PageFirst pageFirst = new PageFirst(invoke);
-		return Button.secondary(
+
+		Button button = Button.secondary(
 			userId + ":" + pageFirst.getButtonId(),
 			pageFirst.getEmoji()
 		);
+
+		if (!loop && numPages == 1)
+			return button.asDisabled();
+
+		return button;
 	}
 
 	/**
