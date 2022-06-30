@@ -8,6 +8,7 @@ import com.raikuman.botutilities.buttons.pagination.buttondefaults.PageLeft;
 import com.raikuman.botutilities.buttons.pagination.buttondefaults.PageRight;
 import com.raikuman.botutilities.commands.manager.CommandInterface;
 import com.raikuman.botutilities.context.EventContext;
+import com.raikuman.botutilities.selectmenus.manager.SelectInterface;
 import net.dv8tion.jda.api.EmbedBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,13 +19,14 @@ import java.util.List;
 /**
  * A button provider for pagination to offer button interfaces to the button manager
  *
- * @version 1.4 2022-29-06
+ * @version 1.5 2022-30-06
  * @since 1.0
  */
 public class PaginationButtonProvider {
 
 	private static final Logger logger = LoggerFactory.getLogger(PaginationButtonProvider.class);
 	private final CommandInterface command;
+	private final SelectInterface select;
 	private final PageInvokeInterface pageCommandInterface;
 	private String invoke;
 
@@ -36,6 +38,10 @@ public class PaginationButtonProvider {
 		else
 			command = null;
 
+		if (object instanceof SelectInterface)
+			select = (SelectInterface) object;
+		else
+			select = null;
 
 		if (object instanceof PageInvokeInterface)
 			pageCommandInterface = (PageInvokeInterface) object;
@@ -48,7 +54,7 @@ public class PaginationButtonProvider {
 	 * @return The button interface list
 	 */
 	public List<ButtonInterface> provideButtons() {
-		if (command == null) {
+		if (command == null && select == null) {
 			logger.error("No command or select found to provide pagination");
 			return new ArrayList<>();
 		}
@@ -58,12 +64,23 @@ public class PaginationButtonProvider {
 			return new ArrayList<>();
 		}
 
-		if (command.getInvoke().isEmpty()) {
-			logger.error("No invoke found to provide pagination");
-			return new ArrayList<>();
+		if (command != null) {
+			if (command.getInvoke().isEmpty()) {
+				logger.error("No invoke found to provide pagination");
+				return new ArrayList<>();
+			}
+
+			invoke = command.getInvoke();
 		}
 
-		invoke = command.getInvoke();
+		if (select != null) {
+			if (select.getMenuValue().isEmpty()) {
+				logger.error("No menu value found to provide pagination");
+				return new ArrayList<>();
+			}
+
+			invoke = select.getMenuValue();
+		}
 
 		if (invoke.isEmpty()) {
 			logger.error("No invoke or menu value found to provide pagination");
