@@ -19,7 +19,7 @@ import java.util.List;
 /**
  * Handles going to the first page of a pagination
  *
- * @version 1.3 2022-30-06
+ * @version 1.4 2022-30-06
  * @since 1.0
  */
 public class PageFirst implements ButtonInterface, PageButtonInterface {
@@ -56,7 +56,8 @@ public class PageFirst implements ButtonInterface, PageButtonInterface {
 
 		List<Button> buttonList = ctx.getButtons();
 		PaginationResources.enableButtons(buttonList);
-		buttonList.set(0, buttonList.get(0).asDisabled());
+		if (!loopPagination())
+			buttonList.set(0, buttonList.get(0).asDisabled());
 
 		List<ActionRow> actionRows = new ArrayList<>();
 		actionRows.add(ActionRow.of(buttonList));
