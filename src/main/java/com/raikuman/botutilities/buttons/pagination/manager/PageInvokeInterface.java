@@ -7,10 +7,10 @@ import java.util.List;
 /**
  * Provides an interface for commands that use pagination
  *
- * @version 1.1 2022-19-06
+ * @version 1.2 2022-30-06
  * @since 1.0
  */
-public interface PageCommandInterface {
+public interface PageInvokeInterface {
 
 	/**
 	 * Returns the list of strings that make up a page

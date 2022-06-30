@@ -21,7 +21,7 @@ import java.util.stream.Stream;
 /**
  * Handles config files by loading and writing configs from files
  *
- * @version 1.1 2022-23-06
+ * @version 1.2 2022-29-06
  * @since 1.0
  */
 public class ConfigIO {
@@ -108,6 +108,7 @@ public class ConfigIO {
 		try {
 			BufferedWriter writer = new BufferedWriter(new FileWriter(file, true));
 			writer.write(configName + "=" + configValue);
+			writer.write("\n");
 
 			writer.close();
 		} catch (IOException e) {
@@ -153,6 +154,7 @@ public class ConfigIO {
 
 			for (Map.Entry<String, String> entry : configMap.entrySet()) {
 				writer.write(entry.getKey() + "=" + entry.getValue());
+				writer.write("\n");
 			}
 
 			writer.close();

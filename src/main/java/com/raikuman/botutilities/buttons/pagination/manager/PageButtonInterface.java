@@ -8,10 +8,10 @@ import java.util.List;
 /**
  * Provides an interface for pagination buttons
  *
- * @version 1.1 2022-19-06
+ * @version 1.2 2022-30-06
  * @since 1.0
  */
-public interface PageInterface {
+public interface PageButtonInterface {
 
 	/**
 	 * Returns the list of EmbedBuilders to act as pages for the button
