@@ -1,11 +1,11 @@
 package com.raikuman.botutilities.configs;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 /**
  * Provides interface for creating config files
  *
- * @version 1.0 2022-17-06
+ * @version 1.1 2022-29-06
  * @since 1.0
  */
 public interface ConfigInterface {
@@ -20,5 +20,5 @@ public interface ConfigInterface {
 	 * Returns a hashmap of configs
 	 * @return The config hashmap
 	 */
-	HashMap<String, String> getConfigs();
+	LinkedHashMap<String, String> getConfigs();
 }
