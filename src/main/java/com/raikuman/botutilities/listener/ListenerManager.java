@@ -4,6 +4,8 @@ import com.raikuman.botutilities.buttons.ButtonEventListener;
 import com.raikuman.botutilities.buttons.manager.ButtonInterface;
 import com.raikuman.botutilities.commands.CommandEventListener;
 import com.raikuman.botutilities.commands.manager.CommandInterface;
+import com.raikuman.botutilities.selectmenus.SelectEventListener;
+import com.raikuman.botutilities.selectmenus.manager.SelectInterface;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 import java.util.ArrayList;
@@ -20,11 +22,14 @@ public class ListenerManager {
 	private final List<ListenerAdapter> listeners;
 	private final List<CommandInterface> commands;
 	private final List<ButtonInterface> buttons;
+	private final List<SelectInterface> selects;
 
-	ListenerManager(List<ListenerAdapter> listeners, List<CommandInterface> commands, List<ButtonInterface> buttons) {
+	ListenerManager(List<ListenerAdapter> listeners, List<CommandInterface> commands,
+		List<ButtonInterface> buttons, List<SelectInterface> selects) {
 		this.listeners = listeners;
 		this.commands = commands;
 		this.buttons = buttons;
+		this.selects = selects;
 	}
 
 	/**
@@ -35,8 +40,8 @@ public class ListenerManager {
 		List<Object> listenerList = new ArrayList<>();
 		listenerList.add(getCommandListener());
 		listenerList.add(getButtonListener());
+		listenerList.add(getSelectListener());
 		listenerList.addAll(listeners);
-
 
 		return listenerList.toArray();
 	}
@@ -55,5 +60,9 @@ public class ListenerManager {
 	 */
 	private ButtonEventListener getButtonListener() {
 		return new ButtonEventListener(buttons);
+	}
+
+	private SelectEventListener getSelectListener() {
+		return new SelectEventListener(selects);
 	}
 }

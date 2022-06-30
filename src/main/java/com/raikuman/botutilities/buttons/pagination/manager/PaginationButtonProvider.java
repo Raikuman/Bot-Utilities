@@ -18,23 +18,27 @@ import java.util.List;
 /**
  * A button provider for pagination to offer button interfaces to the button manager
  *
- * @version 1.3 2022-20-06
+ * @version 1.4 2022-29-06
  * @since 1.0
  */
 public class PaginationButtonProvider {
 
 	private static final Logger logger = LoggerFactory.getLogger(PaginationButtonProvider.class);
 	private final CommandInterface command;
-	private final PageCommandInterface pageCommandInterface;
+	private final PageInvokeInterface pageCommandInterface;
+	private String invoke;
 
 	public PaginationButtonProvider(Object object) {
+		invoke = "";
+
 		if (object instanceof CommandInterface)
 			command = (CommandInterface) object;
 		else
 			command = null;
 
-		if (object instanceof PageCommandInterface)
-			pageCommandInterface = (PageCommandInterface) object;
+
+		if (object instanceof PageInvokeInterface)
+			pageCommandInterface = (PageInvokeInterface) object;
 		else
 			pageCommandInterface = null;
 	}
@@ -45,7 +49,7 @@ public class PaginationButtonProvider {
 	 */
 	public List<ButtonInterface> provideButtons() {
 		if (command == null) {
-			logger.error("No command found to provide pagination");
+			logger.error("No command or select found to provide pagination");
 			return new ArrayList<>();
 		}
 
@@ -59,14 +63,21 @@ public class PaginationButtonProvider {
 			return new ArrayList<>();
 		}
 
+		invoke = command.getInvoke();
+
+		if (invoke.isEmpty()) {
+			logger.error("No invoke or menu value found to provide pagination");
+			return new ArrayList<>();
+		}
+
 		List<ButtonInterface> buttonInterfaces = new ArrayList<>();
 		buttonInterfaces.add(
-			new PageLeft(command.getInvoke()) {
+			new PageLeft(invoke) {
 
 				@Override
 				public List<EmbedBuilder> getPages(EventContext ctx) {
 					return PaginationResources.buildEmbeds(
-						command.getInvoke(),
+						invoke,
 						ctx.getEventMember().getEffectiveAvatarUrl(),
 						pageCommandInterface.pageStrings(ctx),
 						pageCommandInterface.itemsPerPage()
@@ -81,12 +92,12 @@ public class PaginationButtonProvider {
 		);
 
 		buttonInterfaces.add(
-			new PageRight(command.getInvoke()) {
+			new PageRight(invoke) {
 
 				@Override
 				public List<EmbedBuilder> getPages(EventContext ctx) {
 					return PaginationResources.buildEmbeds(
-						command.getInvoke(),
+						invoke,
 						ctx.getEventMember().getEffectiveAvatarUrl(),
 						pageCommandInterface.pageStrings(ctx),
 						pageCommandInterface.itemsPerPage()
@@ -103,12 +114,12 @@ public class PaginationButtonProvider {
 		if (pageCommandInterface.addHomeBtn())
 			buttonInterfaces.add(
 				1,
-				new PageHome(command.getInvoke()) {
+				new PageHome(invoke) {
 
 					@Override
 					public List<EmbedBuilder> getPages(EventContext ctx) {
 						return PaginationResources.buildEmbeds(
-							command.getInvoke(),
+							invoke,
 							ctx.getEventMember().getEffectiveAvatarUrl(),
 							pageCommandInterface.pageStrings(ctx),
 							pageCommandInterface.itemsPerPage()
@@ -125,12 +136,12 @@ public class PaginationButtonProvider {
 		if (pageCommandInterface.addFirstPageBtn())
 			buttonInterfaces.add(
 				1,
-				new PageFirst(command.getInvoke()) {
+				new PageFirst(invoke) {
 
 					@Override
 					public List<EmbedBuilder> getPages(EventContext ctx) {
 						return PaginationResources.buildEmbeds(
-							command.getInvoke(),
+							invoke,
 							ctx.getEventMember().getEffectiveAvatarUrl(),
 							pageCommandInterface.pageStrings(ctx),
 							pageCommandInterface.itemsPerPage()
