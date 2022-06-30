@@ -19,7 +19,7 @@ import java.util.List;
 /**
  * Handles going to the page right of a pagination
  *
- * @version 1.2 2022-29-06
+ * @version 1.3 2022-30-06
  * @since 1.0
  */
 public class PageRight implements ButtonInterface, PageButtonInterface {
@@ -50,11 +50,11 @@ public class PageRight implements ButtonInterface, PageButtonInterface {
 				return;
 			}
 		} else {
+			PaginationResources.enableButtons(buttonList);
 			if (newPageNumber == getPages(ctx).size())
 				buttonList
-					.set(buttonList.indexOf(ctx.getEvent().getButton()), ctx.getEvent().getButton().asDisabled());
-			else
-				PaginationResources.enableButtons(buttonList);
+					.set(buttonList.indexOf(ctx.getEvent().getButton()),
+						ctx.getEvent().getButton().asDisabled());
 		}
 
 		List<ActionRow> eventActionRows = ctx.getEvent().getMessage().getActionRows();

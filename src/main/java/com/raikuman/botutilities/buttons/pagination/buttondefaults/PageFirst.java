@@ -9,6 +9,7 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Emoji;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.ItemComponent;
+import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.interactions.components.selections.SelectMenu;
 import net.dv8tion.jda.api.requests.restaction.interactions.MessageEditCallbackAction;
 
@@ -18,7 +19,7 @@ import java.util.List;
 /**
  * Handles going to the first page of a pagination
  *
- * @version 1.2 2022-29-06
+ * @version 1.3 2022-30-06
  * @since 1.0
  */
 public class PageFirst implements ButtonInterface, PageButtonInterface {
@@ -53,8 +54,12 @@ public class PageFirst implements ButtonInterface, PageButtonInterface {
 			}
 		}
 
+		List<Button> buttonList = ctx.getButtons();
+		PaginationResources.enableButtons(buttonList);
+		buttonList.set(0, buttonList.get(0).asDisabled());
+
 		List<ActionRow> actionRows = new ArrayList<>();
-		actionRows.add(ActionRow.of(ctx.getButtons()));
+		actionRows.add(ActionRow.of(buttonList));
 
 		if (selectMenu != null)
 			actionRows.add(ActionRow.of(selectMenu));
