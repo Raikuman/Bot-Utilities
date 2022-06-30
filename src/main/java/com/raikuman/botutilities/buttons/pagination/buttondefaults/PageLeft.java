@@ -2,13 +2,15 @@ package com.raikuman.botutilities.buttons.pagination.buttondefaults;
 
 import com.raikuman.botutilities.buttons.manager.ButtonContext;
 import com.raikuman.botutilities.buttons.manager.ButtonInterface;
-import com.raikuman.botutilities.buttons.pagination.manager.PageInterface;
+import com.raikuman.botutilities.buttons.pagination.manager.PageButtonInterface;
 import com.raikuman.botutilities.buttons.pagination.PaginationResources;
 import com.raikuman.botutilities.context.EventContext;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Emoji;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
+import net.dv8tion.jda.api.interactions.components.ItemComponent;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
+import net.dv8tion.jda.api.interactions.components.selections.SelectMenu;
 import net.dv8tion.jda.api.requests.restaction.interactions.MessageEditCallbackAction;
 
 import java.util.ArrayList;
@@ -17,10 +19,10 @@ import java.util.List;
 /**
  * Handles going to the page left of a pagination
  *
- * @version 1.1 2022-19-06
+ * @version 1.2 2022-29-06
  * @since 1.0
  */
-public class PageLeft implements ButtonInterface, PageInterface {
+public class PageLeft implements ButtonInterface, PageButtonInterface {
 
 	private final String invoke;
 
@@ -54,8 +56,22 @@ public class PageLeft implements ButtonInterface, PageInterface {
 				PaginationResources.enableButtons(buttonList);
 		}
 
+		List<ActionRow> eventActionRows = ctx.getEvent().getMessage().getActionRows();
+		SelectMenu selectMenu = null;
+		for (ActionRow actionRow : eventActionRows) {
+			for (ItemComponent itemComponent : actionRow.getComponents()) {
+				if (itemComponent instanceof SelectMenu) {
+					selectMenu = (SelectMenu) itemComponent;
+					break;
+				}
+			}
+		}
+
 		List<ActionRow> actionRows = new ArrayList<>();
 		actionRows.add(ActionRow.of(buttonList));
+
+		if (selectMenu != null)
+			actionRows.add(ActionRow.of(selectMenu));
 
 		callbackAction
 			.setEmbeds(getPages(ctx).get(newPageNumber - 1).build())
