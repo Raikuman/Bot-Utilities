@@ -31,3 +31,4 @@ commandresources/
 test/
 /TODO
 /out/
+/database.db
