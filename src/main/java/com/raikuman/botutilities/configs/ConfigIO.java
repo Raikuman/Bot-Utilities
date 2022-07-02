@@ -21,7 +21,7 @@ import java.util.stream.Stream;
 /**
  * Handles config files by loading and writing configs from files
  *
- * @version 1.2 2022-29-06
+ * @version 1.3 2022-02-07
  * @since 1.0
  */
 public class ConfigIO {
@@ -57,8 +57,8 @@ public class ConfigIO {
 		String filePath;
 		for (File file : filesInFolder) {
 			filePath = file.getPath()
-				.substring(file.getPath().indexOf("\\") + 1)
-				.replace("\\", "/");
+				.substring(file.getPath().indexOf(File.separator) + 1)
+				.replace(File.separator, "/");
 
 			if (filePath.equals(fileName + ".cfg")) {
 				foundFile = file;
@@ -93,7 +93,7 @@ public class ConfigIO {
 	 * @param configValue The value of the config to write
 	 */
 	public static void writeConfig(String fileName, String configName, String configValue) {
-		File file = new File(DEFAULT_DIRECTORY + "/" + fileName + ".cfg");
+		File file = new File(DEFAULT_DIRECTORY + File.separator + fileName + ".cfg");
 
 		if (!file.exists()) {
 			logger.warn("Config file " + file.getName() + " does not exist");
@@ -123,7 +123,7 @@ public class ConfigIO {
 	 * @param configValue The value of the config to overwrite
 	 */
 	public static void overwriteConfig(String fileName, String configName, String configValue) {
-		File file = new File(DEFAULT_DIRECTORY + "/" + fileName + ".cfg");
+		File file = new File(DEFAULT_DIRECTORY + File.separator + fileName + ".cfg");
 
 		if (!file.exists()) {
 			logger.warn("Config file " + file.getName() + " does not exist");
