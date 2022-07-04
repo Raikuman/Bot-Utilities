@@ -10,7 +10,7 @@ import net.dv8tion.jda.api.interactions.components.buttons.Button;
 /**
  * Created an object for pagination to provide buttons for an embed
  *
- * @version 1.1 2022-30-06
+ * @version 1.2 2022-30-06
  * @since 1.0
  */
 public class Pagination {
@@ -41,6 +41,9 @@ public class Pagination {
 		if (!loop)
 			return button.asDisabled();
 
+		if (numPages == 1)
+			return button.asDisabled();
+
 		return button;
 	}
 
@@ -59,6 +62,9 @@ public class Pagination {
 		if (!loop && numPages == 1)
 			return button.asDisabled();
 
+		if (numPages == 1)
+			return button.asDisabled();
+
 		return button;
 	}
 
@@ -75,6 +81,9 @@ public class Pagination {
 		);
 
 		if (!loop && numPages == 1)
+			return button.asDisabled();
+
+		if (numPages == 1)
 			return button.asDisabled();
 
 		return button;
