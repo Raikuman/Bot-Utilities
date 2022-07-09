@@ -15,21 +15,23 @@ import java.util.List;
 /**
  * Created an object for pagination to provide buttons for an embed
  *
- * @version 2.0 2022-09-07
+ * @version 2.1 2022-09-07
  * @since 1.0
  */
 public class Pagination {
 
 	private final Member member;
-	private final String invoke;
+	private final String invoke, pageName;
 	private final List<String> paginationStrings;
 	private final boolean loop;
 	private final int itemsPerPage, numPages;
 
-	public Pagination(Member member, String invoke, List<String> paginationStrings, int itemsPerPage,
+	public Pagination(Member member, String invoke, String pageName, List<String> paginationStrings,
+		int itemsPerPage,
 		boolean loop) {
 		this.member = member;
 		this.invoke = invoke;
+		this.pageName = pageName;
 		this.paginationStrings = paginationStrings;
 		this.loop = loop;
 		this.itemsPerPage = itemsPerPage;
@@ -118,7 +120,7 @@ public class Pagination {
 	 */
 	public List<EmbedBuilder> buildEmbeds() {
 		return PaginationResources.buildEmbeds(
-			invoke,
+			pageName,
 			member.getEffectiveAvatarUrl(),
 			paginationStrings,
 			itemsPerPage

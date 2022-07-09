@@ -14,7 +14,7 @@ import java.util.List;
 /**
  * A resource class for making pagination easier
  *
- * @version 1.0 2022-19-06
+ * @version 1.1 2022-09-07
  * @since 1.0
  */
 public class PaginationResources {
@@ -65,13 +65,14 @@ public class PaginationResources {
 
 	/**
 	 * Builds a list of embed builders given information for the embeds
-	 * @param invoke The invocation string of the event
+	 * @param pageName The name of the pagination
 	 * @param avatarUrl The user's avatar url
 	 * @param stringList The list of strings to write pages for pagination
 	 * @param itemsPerPage The number of items (strings) to write per page
 	 * @return The list of embed builders
 	 */
-	public static List<EmbedBuilder> buildEmbeds(String invoke, String avatarUrl, List<String> stringList, int itemsPerPage) {
+	public static List<EmbedBuilder> buildEmbeds(String pageName, String avatarUrl, List<String> stringList,
+		int itemsPerPage) {
 		int numPages = (int) Math.ceil(stringList.size() / (double) itemsPerPage);
 
 		List<EmbedBuilder> embedBuilderList = new ArrayList<>();
@@ -81,7 +82,7 @@ public class PaginationResources {
 		int stringCount = 0;
 		for (int i = 0; i < numPages; i++) {
 			builder
-				.setAuthor(invoke.substring(0, 1).toUpperCase() + invoke.substring(1), null, avatarUrl)
+				.setAuthor(pageName, null, avatarUrl)
 				.setColor(RandomColor.getRandomColor())
 				.setFooter("Page " + (i + 1) + "/" + numPages);
 
