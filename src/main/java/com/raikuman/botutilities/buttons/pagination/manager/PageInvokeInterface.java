@@ -1,6 +1,8 @@
 package com.raikuman.botutilities.buttons.pagination.manager;
 
 import com.raikuman.botutilities.context.EventContext;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.interactions.components.ActionRow;
 
 import java.util.List;
 
@@ -41,4 +43,12 @@ public interface PageInvokeInterface {
 	 * @return The boolean to add a first page button
 	 */
 	boolean addFirstPageBtn();
+
+	default List<ActionRow> homeActionRows(EventContext ctx) {
+		return null;
+	}
+
+	default List<EmbedBuilder> homePages(EventContext ctx) {
+		return null;
+	}
 }
