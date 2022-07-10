@@ -13,6 +13,12 @@ import org.slf4j.LoggerFactory;
 import javax.annotation.Nonnull;
 import java.util.List;
 
+/**
+ * Provides an event listener for selects for the JDA object
+ *
+ * @version 1.0 2022-10-07
+ * @since 1.1
+ */
 public class SelectEventListener extends ListenerAdapter {
 
 	private static final Logger logger = LoggerFactory.getLogger(SelectEventListener.class);
@@ -38,33 +44,6 @@ public class SelectEventListener extends ListenerAdapter {
 		if (user.isBot())
 			return;
 
-		String value = getMenuValue(event.getValues());
-		if (value == null)
-			return;
-
-		// Split menu value
-		String[] id = value.split(":");
-		if (id.length != 2) {
-			logger.error("Could not retrieve menu value");
-			return;
-		}
-
-		String authorId = id[0];
-		String type = id[1];
-
-		if (!authorId.equals(event.getUser().getId())) {
-			event.deferEdit().queue();
-			return;
-		}
-
-		manager.handleEvent(event, type);
-	}
-
-	private String getMenuValue(List<String> values) {
-
-		if (values.size() == 1)
-			return values.get(0);
-		else
-			return null;
+		manager.handleEvent(event);
 	}
 }

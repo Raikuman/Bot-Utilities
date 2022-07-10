@@ -15,7 +15,7 @@ import java.util.List;
 /**
  * Created an object for pagination to provide buttons for an embed
  *
- * @version 2.1 2022-09-07
+ * @version 2.2 2022-10-07
  * @since 1.0
  */
 public class Pagination {
@@ -83,7 +83,7 @@ public class Pagination {
 
 	/**
 	 * Returns a button for moving to the first page in a pagination
-	 * @return Tbe button for the first page
+	 * @return The button for the first page
 	 */
 	public ItemComponent provideFirst() {
 		PageFirst pageFirst = new PageFirst(invoke);

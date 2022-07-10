@@ -1,7 +1,17 @@
 package com.raikuman.botutilities.selectmenus.manager;
 
+/**
+ * Provides interface for creating selects
+ *
+ * @version 1.0 2022-10-07
+ * @since 1.1
+ */
 public interface SelectInterface {
 
+	/**
+	 * Handles what the select will do using select context
+	 * @param ctx The select context for handling
+	 */
 	void handle(SelectContext ctx);
 
 	/**
