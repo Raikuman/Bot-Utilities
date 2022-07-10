@@ -20,7 +20,7 @@ import java.util.List;
 /**
  * A button provider for pagination to offer button interfaces to the button manager
  *
- * @version 2.0 2022-09-07
+ * @version 2.1 2022-10-07
  * @since 1.1
  */
 public class PaginationButtonProvider {
@@ -33,7 +33,7 @@ public class PaginationButtonProvider {
 	 * @return The list of button interfaces
 	 */
 	public static List<ButtonInterface> provideButtons(Object object) {
-		String invoke;
+		String invoke, pageName;
 		CommandInterface command = null;
 		SelectInterface select = null;
 		PageInvokeInterface pageinvokeInterface = null;
@@ -58,13 +58,17 @@ public class PaginationButtonProvider {
 		}
 
 		invoke = getInvoke(command, select);
+		pageName = getPageName(pageinvokeInterface);
+
+		if (pageName.isEmpty())
+			pageName = invoke;
 
 		if (invoke.isEmpty()) {
 			logger.error("No invoke or menu value found to provide pagination");
 			return new ArrayList<>();
 		}
 
-		return createButtons(invoke, pageinvokeInterface);
+		return createButtons(invoke, pageName, pageinvokeInterface);
 	}
 
 	/**
@@ -73,7 +77,7 @@ public class PaginationButtonProvider {
 	 * @param pageInvokeInterface The invocation interface to get page strings and items per page from
 	 * @return A list of button interfaces
 	 */
-	private static List<ButtonInterface> createButtons(String invoke,
+	private static List<ButtonInterface> createButtons(String invoke, String pageName,
 		PageInvokeInterface pageInvokeInterface) {
 		List<ButtonInterface> buttonInterfaces = new ArrayList<>();
 		buttonInterfaces.add(
@@ -82,7 +86,7 @@ public class PaginationButtonProvider {
 				@Override
 				public List<EmbedBuilder> getPages(EventContext ctx) {
 					return PaginationResources.buildEmbeds(
-						invoke,
+						pageName,
 						ctx.getEventMember().getEffectiveAvatarUrl(),
 						pageInvokeInterface.pageStrings(ctx),
 						pageInvokeInterface.itemsPerPage()
@@ -102,7 +106,7 @@ public class PaginationButtonProvider {
 				@Override
 				public List<EmbedBuilder> getPages(EventContext ctx) {
 					return PaginationResources.buildEmbeds(
-						invoke,
+						pageName,
 						ctx.getEventMember().getEffectiveAvatarUrl(),
 						pageInvokeInterface.pageStrings(ctx),
 						pageInvokeInterface.itemsPerPage()
@@ -124,7 +128,7 @@ public class PaginationButtonProvider {
 					@Override
 					public List<EmbedBuilder> getPages(EventContext ctx) {
 						return PaginationResources.buildEmbeds(
-							invoke,
+							pageName,
 							ctx.getEventMember().getEffectiveAvatarUrl(),
 							pageInvokeInterface.pageStrings(ctx),
 							pageInvokeInterface.itemsPerPage()
@@ -156,7 +160,7 @@ public class PaginationButtonProvider {
 					@Override
 					public List<EmbedBuilder> getPages(EventContext ctx) {
 						return PaginationResources.buildEmbeds(
-							invoke,
+							pageName,
 							ctx.getEventMember().getEffectiveAvatarUrl(),
 							pageInvokeInterface.pageStrings(ctx),
 							pageInvokeInterface.itemsPerPage()
@@ -194,6 +198,24 @@ public class PaginationButtonProvider {
 			}
 
 			return selectInterface.getMenuValue();
+		} else {
+			return "";
+		}
+	}
+
+	/**
+	 * Returns the page name string given the page invoke interface object
+	 * @param pageInvokeInterface The page invoke interface to check for a page name string
+	 * @return The page name string
+	 */
+	private static String getPageName(PageInvokeInterface pageInvokeInterface) {
+		if (pageInvokeInterface != null) {
+			if (pageInvokeInterface.pageName().isEmpty()) {
+				logger.error("No page name found to provide pagination");
+				return "";
+			} else {
+				return pageInvokeInterface.pageName();
+			}
 		} else {
 			return "";
 		}
