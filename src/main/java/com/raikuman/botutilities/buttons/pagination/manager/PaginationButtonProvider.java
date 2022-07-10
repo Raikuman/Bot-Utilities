@@ -8,7 +8,9 @@ import com.raikuman.botutilities.buttons.pagination.buttondefaults.PageLeft;
 import com.raikuman.botutilities.buttons.pagination.buttondefaults.PageRight;
 import com.raikuman.botutilities.commands.manager.CommandInterface;
 import com.raikuman.botutilities.context.EventContext;
+import com.raikuman.botutilities.selectmenus.manager.SelectInterface;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.interactions.components.ActionRow;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,58 +20,65 @@ import java.util.List;
 /**
  * A button provider for pagination to offer button interfaces to the button manager
  *
- * @version 1.4 2022-29-06
- * @since 1.0
+ * @version 2.1 2022-10-07
+ * @since 1.1
  */
 public class PaginationButtonProvider {
 
 	private static final Logger logger = LoggerFactory.getLogger(PaginationButtonProvider.class);
-	private final CommandInterface command;
-	private final PageInvokeInterface pageCommandInterface;
-	private String invoke;
 
-	public PaginationButtonProvider(Object object) {
-		invoke = "";
+	/**
+	 * Provides button interfaces for a listener manager
+	 * @param object The object to extract interface information from
+	 * @return The list of button interfaces
+	 */
+	public static List<ButtonInterface> provideButtons(Object object) {
+		String invoke, pageName;
+		CommandInterface command = null;
+		SelectInterface select = null;
+		PageInvokeInterface pageinvokeInterface = null;
 
 		if (object instanceof CommandInterface)
 			command = (CommandInterface) object;
-		else
-			command = null;
 
+		if (object instanceof SelectInterface)
+			select = (SelectInterface) object;
 
 		if (object instanceof PageInvokeInterface)
-			pageCommandInterface = (PageInvokeInterface) object;
-		else
-			pageCommandInterface = null;
-	}
+			pageinvokeInterface = (PageInvokeInterface) object;
 
-	/**
-	 * Provides button interfaces for a listener
-	 * @return The button interface list
-	 */
-	public List<ButtonInterface> provideButtons() {
-		if (command == null) {
+		if (command == null && select == null) {
 			logger.error("No command or select found to provide pagination");
 			return new ArrayList<>();
 		}
 
-		if (pageCommandInterface == null) {
+		if (pageinvokeInterface == null) {
 			logger.error("No page helper found to provide pagination");
 			return new ArrayList<>();
 		}
 
-		if (command.getInvoke().isEmpty()) {
-			logger.error("No invoke found to provide pagination");
-			return new ArrayList<>();
-		}
+		invoke = getInvoke(command, select);
+		pageName = getPageName(pageinvokeInterface);
 
-		invoke = command.getInvoke();
+		if (pageName.isEmpty())
+			pageName = invoke;
 
 		if (invoke.isEmpty()) {
 			logger.error("No invoke or menu value found to provide pagination");
 			return new ArrayList<>();
 		}
 
+		return createButtons(invoke, pageName, pageinvokeInterface);
+	}
+
+	/**
+	 * Creates button interfaces based on PageInvokeInterface methods
+	 * @param invoke The invocation for the button id
+	 * @param pageInvokeInterface The invocation interface to get page strings and items per page from
+	 * @return A list of button interfaces
+	 */
+	private static List<ButtonInterface> createButtons(String invoke, String pageName,
+		PageInvokeInterface pageInvokeInterface) {
 		List<ButtonInterface> buttonInterfaces = new ArrayList<>();
 		buttonInterfaces.add(
 			new PageLeft(invoke) {
@@ -77,16 +86,16 @@ public class PaginationButtonProvider {
 				@Override
 				public List<EmbedBuilder> getPages(EventContext ctx) {
 					return PaginationResources.buildEmbeds(
-						invoke,
+						pageName,
 						ctx.getEventMember().getEffectiveAvatarUrl(),
-						pageCommandInterface.pageStrings(ctx),
-						pageCommandInterface.itemsPerPage()
+						pageInvokeInterface.pageStrings(ctx),
+						pageInvokeInterface.itemsPerPage()
 					);
 				}
 
 				@Override
 				public boolean loopPagination() {
-					return pageCommandInterface.loopPagination();
+					return pageInvokeInterface.loopPagination();
 				}
 			}
 		);
@@ -97,21 +106,21 @@ public class PaginationButtonProvider {
 				@Override
 				public List<EmbedBuilder> getPages(EventContext ctx) {
 					return PaginationResources.buildEmbeds(
-						invoke,
+						pageName,
 						ctx.getEventMember().getEffectiveAvatarUrl(),
-						pageCommandInterface.pageStrings(ctx),
-						pageCommandInterface.itemsPerPage()
+						pageInvokeInterface.pageStrings(ctx),
+						pageInvokeInterface.itemsPerPage()
 					);
 				}
 
 				@Override
 				public boolean loopPagination() {
-					return pageCommandInterface.loopPagination();
+					return pageInvokeInterface.loopPagination();
 				}
 			}
 		);
 
-		if (pageCommandInterface.addHomeBtn())
+		if (pageInvokeInterface.addHomeBtn())
 			buttonInterfaces.add(
 				1,
 				new PageHome(invoke) {
@@ -119,21 +128,31 @@ public class PaginationButtonProvider {
 					@Override
 					public List<EmbedBuilder> getPages(EventContext ctx) {
 						return PaginationResources.buildEmbeds(
-							invoke,
+							pageName,
 							ctx.getEventMember().getEffectiveAvatarUrl(),
-							pageCommandInterface.pageStrings(ctx),
-							pageCommandInterface.itemsPerPage()
+							pageInvokeInterface.pageStrings(ctx),
+							pageInvokeInterface.itemsPerPage()
 						);
 					}
 
 					@Override
 					public boolean loopPagination() {
-						return pageCommandInterface.loopPagination();
+						return pageInvokeInterface.loopPagination();
+					}
+
+					@Override
+					public List<EmbedBuilder> homePages(EventContext ctx) {
+						return pageInvokeInterface.homePages(ctx);
+					}
+
+					@Override
+					public List<ActionRow> homeActionRows(EventContext ctx) {
+						return pageInvokeInterface.homeActionRows(ctx);
 					}
 				}
 			);
 
-		if (pageCommandInterface.addFirstPageBtn())
+		if (pageInvokeInterface.addFirstPageBtn())
 			buttonInterfaces.add(
 				1,
 				new PageFirst(invoke) {
@@ -141,20 +160,64 @@ public class PaginationButtonProvider {
 					@Override
 					public List<EmbedBuilder> getPages(EventContext ctx) {
 						return PaginationResources.buildEmbeds(
-							invoke,
+							pageName,
 							ctx.getEventMember().getEffectiveAvatarUrl(),
-							pageCommandInterface.pageStrings(ctx),
-							pageCommandInterface.itemsPerPage()
+							pageInvokeInterface.pageStrings(ctx),
+							pageInvokeInterface.itemsPerPage()
 						);
 					}
 
 					@Override
 					public boolean loopPagination() {
-						return pageCommandInterface.loopPagination();
+						return pageInvokeInterface.loopPagination();
 					}
 				}
 			);
 
 		return buttonInterfaces;
+	}
+
+	/**
+	 * Returns the invocation string given the command or select interface object
+	 * @param commandInterface The command interface to check for an invocation string
+	 * @param selectInterface The select interface to check for an invocation string
+	 * @return The invocation string
+	 */
+	private static String getInvoke(CommandInterface commandInterface, SelectInterface selectInterface) {
+		if (commandInterface != null) {
+			if (commandInterface.getInvoke().isEmpty()) {
+				logger.error("No invoke found to provide pagination");
+				return "";
+			}
+
+			return commandInterface.getInvoke();
+		} else if (selectInterface != null) {
+			if (selectInterface.getMenuValue().isEmpty()) {
+				logger.error("No menu value found to provide pagination");
+				return "";
+			}
+
+			return selectInterface.getMenuValue();
+		} else {
+			return "";
+		}
+	}
+
+	/**
+	 * Returns the page name string given the page invoke interface object
+	 * @param pageInvokeInterface The page invoke interface to check for a page name string
+	 * @return The page name string
+	 */
+	private static String getPageName(PageInvokeInterface pageInvokeInterface) {
+		if (pageInvokeInterface != null) {
+			if (pageInvokeInterface.pageName().isEmpty()) {
+				logger.error("No page name found to provide pagination");
+				return "";
+			} else {
+				return pageInvokeInterface.pageName();
+			}
+		} else {
+			return "";
+		}
 	}
 }

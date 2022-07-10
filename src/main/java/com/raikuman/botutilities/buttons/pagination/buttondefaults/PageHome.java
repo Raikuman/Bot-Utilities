@@ -6,6 +6,10 @@ import com.raikuman.botutilities.buttons.pagination.manager.PageButtonInterface;
 import com.raikuman.botutilities.context.EventContext;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Emoji;
+import net.dv8tion.jda.api.interactions.components.ActionRow;
+import net.dv8tion.jda.api.requests.restaction.interactions.MessageEditCallbackAction;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
@@ -17,6 +21,8 @@ import java.util.List;
  */
 public class PageHome implements ButtonInterface, PageButtonInterface {
 
+	private static final Logger logger = LoggerFactory.getLogger(PageHome.class);
+
 	private final String invoke;
 
 	public PageHome(String invoke) {
@@ -25,7 +31,22 @@ public class PageHome implements ButtonInterface, PageButtonInterface {
 
 	@Override
 	public void handle(ButtonContext ctx) {
+		MessageEditCallbackAction callbackAction = ctx.getCallbackAction();
 
+		if (homePages(ctx) == null)
+			return;
+
+		if (homeActionRows(ctx) == null) {
+			logger.warn("No action row provided, continuing...");
+			callbackAction
+				.setEmbeds(homePages(ctx).get(0).build())
+				.queue();
+		} else {
+			callbackAction
+				.setEmbeds(homePages(ctx).get(0).build())
+				.setActionRows(homeActionRows(ctx))
+				.queue();
+		}
 	}
 
 	@Override
@@ -51,5 +72,13 @@ public class PageHome implements ButtonInterface, PageButtonInterface {
 	@Override
 	public boolean loopPagination() {
 		return false;
+	}
+
+	public List<ActionRow> homeActionRows(EventContext ctx) {
+		return null;
+	}
+
+	public List<EmbedBuilder> homePages(EventContext ctx) {
+		return null;
 	}
 }
