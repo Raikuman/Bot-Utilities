@@ -3,7 +3,7 @@ package com.raikuman.botutilities.commands;
 import com.raikuman.botutilities.commands.manager.CommandInterface;
 import com.raikuman.botutilities.commands.manager.CommandManager;
 import com.raikuman.botutilities.configs.ConfigFileWriter;
-import com.raikuman.botutilities.configs.ConfigIO;
+import com.raikuman.botutilities.configs.Prefix;
 import com.raikuman.botutilities.configs.defaults.DefaultConfig;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.ReadyEvent;
@@ -18,7 +18,7 @@ import java.util.List;
 /**
  * Provides an event listener for commands for the JDA object
  *
- * @version 1.0 2022-18-06
+ * @version 1.1 2022-13-07
  * @since 1.0
  */
 public class CommandEventListener extends ListenerAdapter {
@@ -48,7 +48,7 @@ public class CommandEventListener extends ListenerAdapter {
 		if (user.isBot() || event.isWebhookMessage())
 			return;
 
-		String prefix = ConfigIO.readConfig("settings", "prefix");
+		String prefix = Prefix.getPrefix(event.getGuild().getIdLong());
 		if (prefix == null) {
 			logger.error("Could not retrieve prefix");
 			return;
