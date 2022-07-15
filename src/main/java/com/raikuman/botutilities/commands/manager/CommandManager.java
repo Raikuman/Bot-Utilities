@@ -1,6 +1,6 @@
 package com.raikuman.botutilities.commands.manager;
 
-import com.raikuman.botutilities.configs.ConfigIO;
+import com.raikuman.botutilities.configs.Prefix;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,7 +14,7 @@ import java.util.regex.Pattern;
  * Manages handling message events to invoke commands. Commands are added and checked if there are multiple
  * commands with the same invoke being added.
  *
- * @version 1.0 2022-18-06
+ * @version 1.1 2022-15-07
  * @since 1.0
  */
 public class CommandManager {
@@ -79,7 +79,7 @@ public class CommandManager {
 	 * @param event The event to check for prefix and command
 	 */
 	public void handleEvent(MessageReceivedEvent event) {
-		String prefix = ConfigIO.readConfig("settings", "prefix");
+		String prefix = Prefix.getPrefix(event.getGuild().getIdLong());
 		if (prefix == null) {
 			logger.error("Could not retrieve prefix");
 			return;
