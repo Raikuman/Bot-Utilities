@@ -3,6 +3,7 @@ package com.raikuman.botutilities.listener;
 import com.raikuman.botutilities.buttons.manager.ButtonInterface;
 import com.raikuman.botutilities.commands.manager.CommandInterface;
 import com.raikuman.botutilities.selectmenus.manager.SelectInterface;
+import com.raikuman.botutilities.slashcommands.manager.SlashInterface;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 import java.util.ArrayList;
@@ -11,7 +12,7 @@ import java.util.List;
 /**
  * A listener manager builder to provide the listener manager to add to the JDA object
  *
- * @version 1.1 2022-23-06
+ * @version 1.2 2022-15-07
  * @since 1.0
  */
 public class ListenerBuilder {
@@ -20,12 +21,14 @@ public class ListenerBuilder {
 	private List<CommandInterface> commands;
 	private List<ButtonInterface> buttons;
 	private List<SelectInterface> selects;
+	private List<SlashInterface> slashes;
 
 	public ListenerBuilder() {
 		commands = new ArrayList<>();
 		buttons = new ArrayList<>();
 		listeners = new ArrayList<>();
 		selects = new ArrayList<>();
+		slashes = new ArrayList<>();
 	}
 
 	/**
@@ -58,8 +61,23 @@ public class ListenerBuilder {
 		return this;
 	}
 
+	/**
+	 * Sets the select interface list to a list of selects
+	 * @param selects The select interface list to set selects
+	 * @return The listener builder object
+	 */
 	public ListenerBuilder setSelects(List<SelectInterface> selects) {
 		this.selects = selects;
+		return this;
+	}
+
+	/**
+	 * Sets the slash interface list to a list of slashes
+	 * @param slashes The slash interface list to set slashes
+	 * @return The listener builder object
+	 */
+	public ListenerBuilder setSlashes(List<SlashInterface> slashes) {
+		this.slashes = slashes;
 		return this;
 	}
 
@@ -72,7 +90,8 @@ public class ListenerBuilder {
 			listeners,
 			commands,
 			buttons,
-			selects
+			selects,
+			slashes
 		);
 	}
 }

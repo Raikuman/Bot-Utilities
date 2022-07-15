@@ -9,6 +9,7 @@ import com.raikuman.botutilities.buttons.pagination.buttondefaults.PageRight;
 import com.raikuman.botutilities.commands.manager.CommandInterface;
 import com.raikuman.botutilities.context.EventContext;
 import com.raikuman.botutilities.selectmenus.manager.SelectInterface;
+import com.raikuman.botutilities.slashcommands.manager.SlashInterface;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import org.slf4j.Logger;
@@ -20,7 +21,7 @@ import java.util.List;
 /**
  * A button provider for pagination to offer button interfaces to the button manager
  *
- * @version 2.1 2022-10-07
+ * @version 2.2 2022-15-07
  * @since 1.1
  */
 public class PaginationButtonProvider {
@@ -36,6 +37,7 @@ public class PaginationButtonProvider {
 		String invoke, pageName;
 		CommandInterface command = null;
 		SelectInterface select = null;
+		SlashInterface slash = null;
 		PageInvokeInterface pageinvokeInterface = null;
 
 		if (object instanceof CommandInterface)
@@ -44,11 +46,14 @@ public class PaginationButtonProvider {
 		if (object instanceof SelectInterface)
 			select = (SelectInterface) object;
 
+		if (object instanceof SlashInterface)
+			slash = (SlashInterface) object;
+
 		if (object instanceof PageInvokeInterface)
 			pageinvokeInterface = (PageInvokeInterface) object;
 
-		if (command == null && select == null) {
-			logger.error("No command or select found to provide pagination");
+		if (command == null && select == null && slash == null) {
+			logger.error("No command or select or slash found to provide pagination");
 			return new ArrayList<>();
 		}
 
@@ -57,7 +62,7 @@ public class PaginationButtonProvider {
 			return new ArrayList<>();
 		}
 
-		invoke = getInvoke(command, select);
+		invoke = getInvoke(command, select, slash);
 		pageName = getPageName(pageinvokeInterface);
 
 		if (pageName.isEmpty())
@@ -183,7 +188,8 @@ public class PaginationButtonProvider {
 	 * @param selectInterface The select interface to check for an invocation string
 	 * @return The invocation string
 	 */
-	private static String getInvoke(CommandInterface commandInterface, SelectInterface selectInterface) {
+	private static String getInvoke(CommandInterface commandInterface, SelectInterface selectInterface,
+		SlashInterface slashInterface) {
 		if (commandInterface != null) {
 			if (commandInterface.getInvoke().isEmpty()) {
 				logger.error("No invoke found to provide pagination");
@@ -198,6 +204,13 @@ public class PaginationButtonProvider {
 			}
 
 			return selectInterface.getMenuValue();
+		} else if (slashInterface != null) {
+			if (slashInterface.getInvoke().isEmpty()) {
+				logger.error("No menu value found to provide pagination");
+				return "";
+			}
+
+			return slashInterface.getInvoke();
 		} else {
 			return "";
 		}

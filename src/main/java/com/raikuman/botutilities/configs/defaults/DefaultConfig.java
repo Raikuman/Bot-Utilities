@@ -22,6 +22,7 @@ public class DefaultConfig implements ConfigInterface, DatabaseConfigInterface {
 	public LinkedHashMap<String, String> getConfigs() {
 		LinkedHashMap<String, String> configMap = new LinkedHashMap<>();
 		configMap.put("prefix", "!");
+		configMap.put("globalappcommands", "false");
 
 		return configMap;
 	}
