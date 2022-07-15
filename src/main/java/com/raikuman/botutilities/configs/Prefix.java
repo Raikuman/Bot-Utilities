@@ -12,7 +12,7 @@ import java.sql.SQLException;
 /**
  * Handles loading the bot prefix
  *
- * @version 1.0 2022-13-07
+ * @version 1.1 2022-15-07
  * @since 1.2
  */
 public class Prefix {
@@ -20,7 +20,6 @@ public class Prefix {
 	private static final Logger logger = LoggerFactory.getLogger(Prefix.class);
 
 	public static String getPrefix(long guildId) {
-		DefaultConfig defaultConfig = new DefaultConfig();
 		String config = DatabaseIO.getConfig(
 			// language=SQLITE-SQL
 			"SELECT prefix FROM guild_settings WHERE guild_id = ?",
@@ -31,6 +30,25 @@ public class Prefix {
 		if (config != null)
 			return config;
 
+		setDefault(guildId);
+
+		return ConfigIO.readConfig(new DefaultConfig().fileName(), "prefix");
+	}
+
+	public static void updatePrefix(long guildId, String newPrefix) {
+
+		// language=SQLITE-SQL
+		boolean updated = DatabaseIO.updateConfig(
+			"UPDATE guild_settings SET prefix = ? WHERE guild_id = ?",
+			guildId,
+			newPrefix
+		);
+
+		if (!updated)
+			setDefault(guildId);
+	}
+
+	private static void setDefault(long guildId) {
 		try (final PreparedStatement preparedStatement = DatabaseManager
 			.getConnection()
 			// language=SQLITE-SQL
@@ -41,9 +59,7 @@ public class Prefix {
 			preparedStatement.setString(1, String.valueOf(guildId));
 			preparedStatement.execute();
 		} catch (SQLException e) {
-			logger.warn("Could not insert " + defaultConfig + " to database");
+			logger.warn("Could not insert " + new DefaultConfig() + " to database");
 		}
-
-		return ConfigIO.readConfig(new DefaultConfig().fileName(), "prefix");
 	}
 }
