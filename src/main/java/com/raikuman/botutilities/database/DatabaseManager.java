@@ -12,7 +12,7 @@ import java.util.List;
 /**
  * Provides a connection to the datasource and creating tables based on config file statements
  *
- * @version 1.0 2022-13-07
+ * @version 1.1 2022-16-07
  * @since 1.2
  */
 public class DatabaseManager {
@@ -53,10 +53,9 @@ public class DatabaseManager {
 	 * @param configInterfaces The config interfaces to get statements from
 	 */
 	public static void executeConfigStatements(List<DatabaseConfigInterface> configInterfaces) {
-		for (DatabaseConfigInterface configInterface : configInterfaces) {
-			if (configInterface.tableStatement() != null)
-				executeStatement(configInterface.tableStatement());
-		}
+		for (DatabaseConfigInterface configInterface : configInterfaces)
+			for (String statement : configInterface.tableStatements())
+				executeStatement(statement);
 	}
 
 	/**

@@ -12,7 +12,7 @@ import java.sql.SQLException;
 /**
  * Handles loading the bot prefix
  *
- * @version 1.1 2022-15-07
+ * @version 1.2 2022-16-07
  * @since 1.2
  */
 public class Prefix {
@@ -53,7 +53,7 @@ public class Prefix {
 			.getConnection()
 			// language=SQLITE-SQL
 			.prepareStatement(
-				"INSERT INTO guild_settings(guild_id) VALUES(?)"
+				"INSERT OR IGNORE INTO guild_settings(guild_id) VALUES(?)"
 			)) {
 
 			preparedStatement.setString(1, String.valueOf(guildId));

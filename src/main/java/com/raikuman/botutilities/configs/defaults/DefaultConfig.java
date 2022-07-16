@@ -4,11 +4,12 @@ import com.raikuman.botutilities.configs.ConfigInterface;
 import com.raikuman.botutilities.configs.DatabaseConfigInterface;
 
 import java.util.LinkedHashMap;
+import java.util.List;
 
 /**
  * Provides configuration for bot
  *
- * @version 1.1 2022-13-07
+ * @version 1.2 2022-16-07
  * @since 1.0
  */
 public class DefaultConfig implements ConfigInterface, DatabaseConfigInterface {
@@ -28,16 +29,14 @@ public class DefaultConfig implements ConfigInterface, DatabaseConfigInterface {
 	}
 
 	@Override
-	public String tableName() {
-		return "guild_settings";
-	}
-
-	@Override
-	public String tableStatement() {
+	public List<String> tableStatements() {
 		// language=SQLITE-SQL
-		return "CREATE TABLE IF NOT EXISTS " + tableName() + " (" +
+		return List.of(
+			"CREATE TABLE IF NOT EXISTS settings(" +
 			"id INTEGER PRIMARY KEY AUTOINCREMENT," +
 			"guild_id VARCHAR(20) NOT NULL," +
-			"prefix VARCHAR(255) NOT NULL DEFAULT '!');";
+			"prefix VARCHAR(255) NOT NULL DEFAULT '!')," +
+			"UNIQUE(guild_id);"
+		);
 	}
 }
