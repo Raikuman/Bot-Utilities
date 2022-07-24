@@ -21,7 +21,7 @@ import java.util.stream.Stream;
 /**
  * Handles config files by loading and writing configs from files
  *
- * @version 1.3 2022-02-07
+ * @version 1.4 2022-24-07
  * @since 1.0
  */
 public class ConfigIO {
@@ -80,7 +80,13 @@ public class ConfigIO {
 		}
 
 		if (readConfig != null) {
-			return readConfig.split("=")[1].toLowerCase();
+			String[] splitString = readConfig.split("=");
+			if (splitString.length == 1) {
+				logger.warn("No value found for config settings " + configName);
+				return null;
+			} else {
+				return readConfig.split("=")[1];
+			}
 		} else {
 			return null;
 		}
@@ -130,21 +136,19 @@ public class ConfigIO {
 			return;
 		}
 
-		if (readConfig(fileName, configName) == null) {
-			logger.warn("Config setting " + configName + " does not exist in config file " + file.getName());
-			return;
-		}
-
 		HashMap<String, String> configMap = new LinkedHashMap<>();
 		String[] config;
 		for (String string : FileLoader.readFileToArray(file)) {
 			config = string.split("=");
-			if (config.length != 2) {
+			if (config.length < 1 || config.length> 2) {
 				logger.error("Error retrieving config settings from config file " + file.getName());
 				return;
 			}
 
-			configMap.put(config[0], config[1]);
+			if (config.length == 1)
+				configMap.put(config[0], "");
+			else
+				configMap.put(config[0], config[1]);
 		}
 
 		configMap.replace(configName, configValue);
