@@ -12,7 +12,7 @@ import java.sql.SQLException;
 /**
  * Handles loading the bot prefix
  *
- * @version 1.2 2022-16-07
+ * @version 1.3 2022-24-07
  * @since 1.2
  */
 public class Prefix {
@@ -23,8 +23,8 @@ public class Prefix {
 		String config = DatabaseIO.getConfig(
 			// language=SQLITE-SQL
 			"SELECT prefix FROM guild_settings WHERE guild_id = ?",
-			guildId,
-			"prefix"
+			"prefix",
+			String.valueOf(guildId)
 		);
 
 		if (config != null)
@@ -36,12 +36,11 @@ public class Prefix {
 	}
 
 	public static void updatePrefix(long guildId, String newPrefix) {
-
-		// language=SQLITE-SQL
 		boolean updated = DatabaseIO.updateConfig(
+			// language=SQLITE-SQL
 			"UPDATE guild_settings SET prefix = ? WHERE guild_id = ?",
-			guildId,
-			newPrefix
+			newPrefix,
+			String.valueOf(guildId)
 		);
 
 		if (!updated)

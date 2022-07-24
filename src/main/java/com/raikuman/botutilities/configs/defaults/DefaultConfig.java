@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * Provides configuration for bot
  *
- * @version 1.2 2022-16-07
+ * @version 1.3 2022-24-07
  * @since 1.0
  */
 public class DefaultConfig implements ConfigInterface, DatabaseConfigInterface {
@@ -24,6 +24,7 @@ public class DefaultConfig implements ConfigInterface, DatabaseConfigInterface {
 		LinkedHashMap<String, String> configMap = new LinkedHashMap<>();
 		configMap.put("prefix", "!");
 		configMap.put("globalappcommands", "false");
+		configMap.put("env", "");
 
 		return configMap;
 	}
@@ -34,9 +35,9 @@ public class DefaultConfig implements ConfigInterface, DatabaseConfigInterface {
 		return List.of(
 			"CREATE TABLE IF NOT EXISTS settings(" +
 			"id INTEGER PRIMARY KEY AUTOINCREMENT," +
-			"guild_id VARCHAR(20) NOT NULL," +
-			"prefix VARCHAR(255) NOT NULL DEFAULT '!')," +
-			"UNIQUE(guild_id);"
+			"guild_id VARCHAR(20) NOT NULL UNIQUE," +
+			"prefix VARCHAR(255) DEFAULT '!')" +
+			";"
 		);
 	}
 }
