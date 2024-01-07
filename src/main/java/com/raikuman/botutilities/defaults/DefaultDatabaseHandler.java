@@ -194,4 +194,26 @@ public class DefaultDatabaseHandler {
 
         return -1;
     }
+
+    public static String getPrefix(Guild guild) {
+        int guildId = getGuildId(guild);
+
+        try (
+            Connection connection = DatabaseManager.getConnection();
+            PreparedStatement statement = connection.prepareStatement(
+                "SELECT prefix FROM guild_setting WHERE guild_id = ?"
+            )) {
+            statement.setInt(1, guildId);
+
+            try (ResultSet resultSet = statement.executeQuery()) {
+                if (resultSet.next()) {
+                    return resultSet.getString(1);
+                }
+            }
+        } catch (SQLException e) {
+            logger.error("An error occurred getting prefix for guild: " + guildId);
+        }
+
+        return "";
+    }
 }
