@@ -131,7 +131,7 @@ public class DefaultDatabaseHandler {
             PreparedStatement statement = connection.prepareStatement(
                 "DELETE FROM user WHERE user_id = ?"
             )) {
-            statement.setString(1, String.valueOf(userId));
+            statement.setInt(1, userId);
             statement.execute();
         } catch (SQLException e) {
             logger.error("An error occurred deleting user from database for: " + user.getEffectiveName() + ":" + user.getId());
