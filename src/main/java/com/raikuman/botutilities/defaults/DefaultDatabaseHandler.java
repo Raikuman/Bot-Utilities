@@ -19,8 +19,11 @@ public class DefaultDatabaseHandler {
     public static void addGuild(Guild guild) {
         int guildId = getGuildId(guild);
 
-        // Guild already exists
-        if (guildId != -1) return;
+        // Guild already exists, populate with new members
+        if (guildId != -1) {
+            populateUserMemberDB(guild.getMembers(), guildId);
+            return;
+        };
 
         // Build guild database
         try (
@@ -55,13 +58,17 @@ public class DefaultDatabaseHandler {
             return;
         }
 
+        populateUserMemberDB(guild.getMembers(), guildId);
+    }
+
+    private static void populateUserMemberDB(List<Member> guildMembers, int guildId) {
         // Check for thin database
         boolean thinDatabase = Boolean.parseBoolean(new ConfigData(new DefaultConfig()).getConfig("thindatabase"));
         if (thinDatabase) return;
 
         // Build user database
         List<Integer> userIds = new ArrayList<>();
-        for (Member member: guild.getMembers()) {
+        for (Member member: guildMembers) {
             if (member.getUser().isBot()) continue;
 
             int userId = addUser(member.getUser());
