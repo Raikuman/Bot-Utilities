@@ -15,5 +15,5 @@ public interface Command {
     }
     String getUsage();
     String getDescription();
-    Category getCategory();
+    default Category getCategory() { return null; };
 }
