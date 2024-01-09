@@ -1,7 +1,11 @@
 package com.raikuman.botutilities.invocation.listener;
 
+import com.raikuman.botutilities.config.ConfigData;
+import com.raikuman.botutilities.defaults.DefaultConfig;
 import com.raikuman.botutilities.invocation.manager.SlashManager;
 import com.raikuman.botutilities.invocation.type.Slash;
+import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.session.ReadyEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -24,10 +28,30 @@ public class SlashEventListener extends ListenerAdapter {
     public void onReady(ReadyEvent event) {
         logger.info("{}" + SlashEventListener.class.getName() + " is initialized",
             event.getJDA().getSelfUser().getEffectiveName());
+
+        loadSlashCommands(event.getJDA());
     }
 
     @Override
     public void onSlashCommandInteraction(@NotNull SlashCommandInteractionEvent event) {
         manager.handleEvent(event);
+    }
+
+    private void loadSlashCommands(JDA jda) {
+        boolean loadGlobal = Boolean.parseBoolean(new ConfigData(new DefaultConfig()).getConfig("globalapp"));
+
+        if (loadGlobal) {
+            jda.updateCommands().addCommands(manager.getSlashCommandData()).queue();
+
+            for (Guild guild : jda.getGuilds()) {
+                guild.updateCommands().queue();
+            }
+        } else {
+            jda.updateCommands().queue();
+
+            for (Guild guild : jda.getGuilds()) {
+                guild.updateCommands().addCommands(manager.getSlashCommandData()).queue();
+            }
+        }
     }
 }
