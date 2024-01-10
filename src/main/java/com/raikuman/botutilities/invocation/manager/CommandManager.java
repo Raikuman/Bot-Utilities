@@ -1,6 +1,6 @@
 package com.raikuman.botutilities.invocation.manager;
 
-import com.raikuman.botutilities.defaults.DefaultDatabaseHandler;
+import com.raikuman.botutilities.defaults.database.DefaultDatabaseHandler;
 import com.raikuman.botutilities.invocation.context.CommandContext;
 import com.raikuman.botutilities.invocation.type.Command;
 import net.dv8tion.jda.api.entities.User;
