@@ -1,8 +1,9 @@
-package com.raikuman.botutilities.defaults;
+package com.raikuman.botutilities.defaults.database;
 
 import com.raikuman.botutilities.config.ConfigData;
 import com.raikuman.botutilities.database.DatabaseManager;
 import com.raikuman.botutilities.database.DatabaseStartup;
+import com.raikuman.botutilities.defaults.DefaultConfig;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import org.slf4j.Logger;

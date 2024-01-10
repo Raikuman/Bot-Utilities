@@ -1,4 +1,4 @@
-package com.raikuman.botutilities.defaults;
+package com.raikuman.botutilities.defaults.database;
 
 import net.dv8tion.jda.api.events.guild.GuildJoinEvent;
 import net.dv8tion.jda.api.events.guild.GuildLeaveEvent;
