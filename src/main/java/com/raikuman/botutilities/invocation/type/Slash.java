@@ -11,6 +11,10 @@ public interface Slash {
     String getInvoke();
     String getDescription();
     default CommandData getCommandData() {
+        if (getInvoke() == null || getDescription() == null) {
+            return null;
+        }
+
         return Commands.slash(getInvoke(), getDescription());
     }
     default Category getCategory() { return null; }

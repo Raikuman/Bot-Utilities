@@ -28,6 +28,11 @@ public class SlashManager {
     public List<CommandData> getSlashCommandData() {
         List<CommandData> commandData = new ArrayList<>();
         for (Map.Entry<String, Slash> slash : slashes.entrySet()) {
+            CommandData data = slash.getValue().getCommandData();
+            if (data == null) {
+                continue;
+            }
+
             commandData.add(slash.getValue().getCommandData());
         }
 
