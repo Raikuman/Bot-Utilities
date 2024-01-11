@@ -3,9 +3,10 @@ package com.raikuman.botutilities;
 import com.raikuman.botutilities.config.Config;
 import com.raikuman.botutilities.config.ConfigHandler;
 import com.raikuman.botutilities.database.DatabaseStartup;
-import com.raikuman.botutilities.defaults.DatabaseEventListener;
+import com.raikuman.botutilities.defaults.database.DatabaseEventListener;
 import com.raikuman.botutilities.defaults.DefaultConfig;
-import com.raikuman.botutilities.defaults.DefaultDatabaseStartup;
+import com.raikuman.botutilities.defaults.database.DefaultDatabaseStartup;
+import com.raikuman.botutilities.defaults.invocation.Prefix;
 import com.raikuman.botutilities.invocation.listener.CommandEventListener;
 import com.raikuman.botutilities.invocation.listener.SlashEventListener;
 import com.raikuman.botutilities.invocation.type.Command;
@@ -34,19 +35,24 @@ public class BotSetup {
         this.configs = new ArrayList<>();
         this.databases = new ArrayList<>();
         this.commands = new ArrayList<>();
+        this.slashes = new ArrayList<>();
     }
 
+    @CheckReturnValue
     public static BotSetup setup(JDABuilder jdaBuilder) {
         return new BotSetup(jdaBuilder);
     }
 
+    @CheckReturnValue
     public BotSetup addCommands(List<Command> commands) {
         this.commands = commands;
         return this;
     }
 
+    @CheckReturnValue
     public BotSetup addSlashes(List<Slash> slashes) {
         this.slashes = slashes;
+        slashes.add(new Prefix());
         return this;
     }
 
@@ -64,22 +70,7 @@ public class BotSetup {
 
     public JDA build(String token) {
         // Add listeners
-        List<ListenerAdapter> listeners = new ArrayList<>();
-        listeners.add(new DatabaseEventListener());
-
-        if (!commands.isEmpty()) {
-            listeners.add(new CommandEventListener(commands));
-        } else {
-            logger.info("No commands found, disabling command event listener");
-        }
-
-        if (!slashes.isEmpty()) {
-            listeners.add(new SlashEventListener(slashes));
-        } else {
-            logger.info("No slashes found, disabling slash event listener");
-        }
-
-        jdaBuilder.addEventListeners(listeners.toArray());
+        jdaBuilder.addEventListeners(buildListeners());
 
         // Build JDA
         jdaBuilder.setToken(token);
@@ -96,6 +87,31 @@ public class BotSetup {
             System.exit(0);
         };
 
+        setupData(jda);
+
+        return jda;
+    }
+
+    private Object[] buildListeners() {
+        List<ListenerAdapter> listeners = new ArrayList<>();
+        listeners.add(new DatabaseEventListener());
+
+        if (!commands.isEmpty()) {
+            listeners.add(new CommandEventListener(commands));
+        } else {
+            logger.info("No commands found, disabling command event listener");
+        }
+
+        if (!slashes.isEmpty()) {
+            listeners.add(new SlashEventListener(slashes));
+        } else {
+            logger.info("No slashes found, disabling slash event listener");
+        }
+
+        return listeners.toArray();
+    }
+
+    private void setupData(JDA jda) {
         // Setup configs
         this.configs.add(new DefaultConfig());
         ConfigHandler.writeConfigs(configs);
@@ -105,7 +121,5 @@ public class BotSetup {
         for (DatabaseStartup database : databases) {
             database.startup(jda);
         }
-
-        return jda;
     }
 }
