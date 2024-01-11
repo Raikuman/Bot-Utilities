@@ -20,11 +20,14 @@ import org.slf4j.helpers.CheckReturnValue;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class BotSetup {
 
     private static final Logger logger = LoggerFactory.getLogger(BotSetup.class);
     private final JDABuilder jdaBuilder;
+    private ExecutorService executor;
     private List<Config> configs;
     private List<DatabaseStartup> databases;
     private List<Command> commands;
@@ -36,6 +39,13 @@ public class BotSetup {
         this.databases = new ArrayList<>();
         this.commands = new ArrayList<>();
         this.slashes = new ArrayList<>();
+
+        // Default thread pool size
+        int threadPoolSize = Runtime.getRuntime().availableProcessors() / 4;
+        if (threadPoolSize <= 0) {
+            threadPoolSize = 1;
+        }
+        this.executor = Executors.newFixedThreadPool(threadPoolSize);
     }
 
     @CheckReturnValue
@@ -68,6 +78,19 @@ public class BotSetup {
         return this;
     }
 
+    @CheckReturnValue
+    public BotSetup setExecutorThreads(int threads) {
+        if (threads <= 0) {
+            threads = 1;
+        }
+        this.executor = Executors.newFixedThreadPool(threads);
+        return this;
+    }
+
+    public ExecutorService getExecutorService() {
+        return executor;
+    }
+
     public JDA build(String token) {
         // Add listeners
         jdaBuilder.addEventListeners(buildListeners());
@@ -97,13 +120,13 @@ public class BotSetup {
         listeners.add(new DatabaseEventListener());
 
         if (!commands.isEmpty()) {
-            listeners.add(new CommandEventListener(commands));
+            listeners.add(new CommandEventListener(commands, executor));
         } else {
             logger.info("No commands found, disabling command event listener");
         }
 
         if (!slashes.isEmpty()) {
-            listeners.add(new SlashEventListener(slashes));
+            listeners.add(new SlashEventListener(slashes, executor));
         } else {
             logger.info("No slashes found, disabling slash event listener");
         }

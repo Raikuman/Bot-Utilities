@@ -39,13 +39,18 @@ public class SlashManager {
         return commandData;
     }
 
-    public Slash getSlash(String slashInvoke) {
-        return slashes.get(slashInvoke);
-    }
-
     public void handleEvent(SlashCommandInteractionEvent event) {
-        // Retrieve command from handler
-        Slash slash = getSlash(event.getName());
+        // Force handling in guild only
+        if (!event.isFromGuild()) {
+            return;
+        }
+
+        // Retrieve slash
+        Slash slash = slashes.get(event.getName());
+        if (slash == null) {
+            logger.error("Invalid slash invocation: " + event.getName());
+            return;
+        }
 
         // Handle slash
         slash.handle(event);

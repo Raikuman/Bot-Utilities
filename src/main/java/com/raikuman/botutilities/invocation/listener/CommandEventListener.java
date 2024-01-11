@@ -10,14 +10,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
+import java.util.concurrent.ExecutorService;
 
 public class CommandEventListener extends ListenerAdapter {
 
     private static final Logger logger = LoggerFactory.getLogger(CommandEventListener.class);
     private final CommandManager manager;
+    private final ExecutorService executor;
 
-    public CommandEventListener(List<Command> commands) {
+    public CommandEventListener(List<Command> commands, ExecutorService executor) {
         manager = new CommandManager(commands);
+        this.executor = executor;
     }
 
     @Override
@@ -28,6 +31,10 @@ public class CommandEventListener extends ListenerAdapter {
 
     @Override
     public void onMessageReceived(@NotNull MessageReceivedEvent event) {
-        manager.handleEvent(event);
+        executor.submit(() -> {
+            synchronized (this) {
+                manager.handleEvent(event);
+            }
+        });
     }
 }
