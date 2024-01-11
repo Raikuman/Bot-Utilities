@@ -169,7 +169,6 @@ public class DefaultDatabaseHandler {
             statement.setInt(1, guild);
             statement.setInt(2, user);
             statement.execute();
-            System.out.println("EXECUTED");
         } catch (SQLException e) {
             logger.error("An error occurred deleting member from database for guild:" + guild + ", user:" + user);
         }
