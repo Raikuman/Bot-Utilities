@@ -1,12 +1,11 @@
 package com.raikuman.botutilities.invocation.listener;
 
-import com.raikuman.botutilities.BotSetup;
 import com.raikuman.botutilities.config.ConfigData;
 import com.raikuman.botutilities.defaults.DefaultConfig;
+import com.raikuman.botutilities.invocation.component.ComponentHandler;
 import com.raikuman.botutilities.invocation.manager.SlashManager;
 import com.raikuman.botutilities.invocation.type.Slash;
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.events.guild.GuildJoinEvent;
 import net.dv8tion.jda.api.events.guild.GuildReadyEvent;
@@ -26,8 +25,8 @@ public class SlashEventListener extends ListenerAdapter {
     private final SlashManager manager;
     private final ExecutorService executor;
 
-    public SlashEventListener(List<Slash> slashes, ExecutorService executor) {
-        manager = new SlashManager(slashes);
+    public SlashEventListener(List<Slash> slashes, ExecutorService executor, ComponentHandler componentHandler) {
+        manager = new SlashManager(slashes, componentHandler);
         this.executor = executor;
     }
 

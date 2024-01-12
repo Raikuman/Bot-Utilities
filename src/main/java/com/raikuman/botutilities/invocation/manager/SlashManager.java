@@ -1,5 +1,6 @@
 package com.raikuman.botutilities.invocation.manager;
 
+import com.raikuman.botutilities.invocation.component.ComponentHandler;
 import com.raikuman.botutilities.invocation.type.Slash;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
@@ -16,9 +17,12 @@ public class SlashManager {
     private static final Logger logger = LoggerFactory.getLogger(SlashManager.class);
     private final HashMap<String, Slash> slashes;
 
-    public SlashManager(List<Slash> slashes) {
+    public SlashManager(List<Slash> slashes, ComponentHandler componentHandler) {
         HashMap<String, Slash> slashMap = new HashMap<>();
         for (Slash slash : slashes) {
+            // Update component manager
+            slash.componentHandler = componentHandler;
+
             slashMap.put(slash.getInvoke(), slash);
         }
 
