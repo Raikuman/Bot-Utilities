@@ -1,19 +1,27 @@
 package com.raikuman.botutilities.invocation.type;
 
 import com.raikuman.botutilities.invocation.Category;
+import com.raikuman.botutilities.invocation.component.ComponentHandler;
 import com.raikuman.botutilities.invocation.context.CommandContext;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public interface Command {
+public abstract class Command {
 
-    void handle(CommandContext ctx);
-    String getInvoke();
-    default List<String> getAliases() {
+    public ComponentHandler componentHandler;
+    public abstract void handle(CommandContext ctx);
+    public abstract String getInvoke();
+    public List<String> getAliases() {
         return new ArrayList<>();
     }
-    String getUsage();
-    String getDescription();
-    default Category getCategory() { return null; };
+    public String getUsage() {
+        return "";
+    }
+    public String getDescription() {
+        return "";
+    }
+    public Category getCategory() {
+        return null;
+    }
 }

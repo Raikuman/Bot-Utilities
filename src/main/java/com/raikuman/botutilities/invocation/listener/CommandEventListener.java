@@ -1,5 +1,6 @@
 package com.raikuman.botutilities.invocation.listener;
 
+import com.raikuman.botutilities.invocation.component.ComponentHandler;
 import com.raikuman.botutilities.invocation.manager.CommandManager;
 import com.raikuman.botutilities.invocation.type.Command;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
@@ -18,8 +19,8 @@ public class CommandEventListener extends ListenerAdapter {
     private final CommandManager manager;
     private final ExecutorService executor;
 
-    public CommandEventListener(List<Command> commands, ExecutorService executor) {
-        manager = new CommandManager(commands);
+    public CommandEventListener(List<Command> commands, ExecutorService executor, ComponentHandler componentHandler) {
+        manager = new CommandManager(commands, componentHandler);
         this.executor = executor;
     }
 

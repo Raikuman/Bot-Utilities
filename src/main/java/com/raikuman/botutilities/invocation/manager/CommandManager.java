@@ -1,6 +1,7 @@
 package com.raikuman.botutilities.invocation.manager;
 
 import com.raikuman.botutilities.defaults.database.DefaultDatabaseHandler;
+import com.raikuman.botutilities.invocation.component.ComponentHandler;
 import com.raikuman.botutilities.invocation.context.CommandContext;
 import com.raikuman.botutilities.invocation.type.Command;
 import net.dv8tion.jda.api.entities.User;
@@ -17,10 +18,14 @@ public class CommandManager {
     private static final Logger logger = LoggerFactory.getLogger(CommandManager.class);
     private final HashMap<List<String>, Command> commands;
 
-    public CommandManager(List<Command> commands) {
+    public CommandManager(List<Command> commands, ComponentHandler componentHandler) {
         // Process commands to map
         HashMap<List<String>, Command> commandMap = new HashMap<>();
         for (Command command : commands) {
+            // Update component manager
+            command.componentHandler = componentHandler;
+
+            // Add to map
             List<String> aliases = new ArrayList<>(command.getAliases());
             aliases.add(command.getInvoke());
 
