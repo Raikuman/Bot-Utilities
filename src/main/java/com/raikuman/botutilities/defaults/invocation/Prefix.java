@@ -18,7 +18,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.time.Duration;
 
-public class Prefix implements Slash {
+public class Prefix extends Slash {
 
     @Override
     public void handle(SlashCommandInteractionEvent ctx) {
