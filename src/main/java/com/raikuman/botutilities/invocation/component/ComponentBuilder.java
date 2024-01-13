@@ -1,12 +1,15 @@
 package com.raikuman.botutilities.invocation.component;
 
 import com.raikuman.botutilities.invocation.type.ButtonComponent;
+import com.raikuman.botutilities.invocation.type.SelectComponent;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.ItemComponent;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
+import net.dv8tion.jda.api.interactions.components.selections.SelectOption;
+import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,5 +39,19 @@ public class ComponentBuilder {
         }
 
         return ActionRow.of(components);
+    }
+
+    public static ActionRow buildStringSelectMenu(String invoke, String placeholder, User user,
+                                                  List<SelectComponent> selectComponents) {
+        // Create components
+        StringSelectMenu.Builder menu = StringSelectMenu.create(user.getId() + ":" + invoke)
+            .setPlaceholder(placeholder)
+            .setRequiredRange(1, 1);
+
+        for (SelectComponent selectComponent : selectComponents) {
+            menu.addOptions(SelectOption.of(selectComponent.displayLabel(), selectComponent.getInvoke()));
+        }
+
+        return ActionRow.of(menu.build());
     }
 }
