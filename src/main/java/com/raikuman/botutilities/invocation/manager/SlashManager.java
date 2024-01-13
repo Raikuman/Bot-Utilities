@@ -20,6 +20,12 @@ public class SlashManager {
     public SlashManager(List<Slash> slashes, ComponentHandler componentHandler) {
         HashMap<String, Slash> slashMap = new HashMap<>();
         for (Slash slash : slashes) {
+            // Check for existing invocation
+            if (slashMap.containsKey(slash.getInvoke())) {
+                logger.error("Duplicate invocation: " + slash.getInvoke());
+                continue;
+            }
+
             // Update component manager
             slash.componentHandler = componentHandler;
 

@@ -22,13 +22,19 @@ public class CommandManager {
         // Process commands to map
         HashMap<List<String>, Command> commandMap = new HashMap<>();
         for (Command command : commands) {
+            // Check for existing invocation
+            List<String> aliases = new ArrayList<>(command.getAliases());
+            aliases.add(command.getInvoke());
+
+            if (commandMap.containsKey(aliases)) {
+                logger.error("Duplicate invocation: " + command.getInvoke());
+                continue;
+            }
+
             // Update component manager
             command.componentHandler = componentHandler;
 
             // Add to map
-            List<String> aliases = new ArrayList<>(command.getAliases());
-            aliases.add(command.getInvoke());
-
             aliases = aliases.stream().map(String::toLowerCase).collect(Collectors.toList());
             commandMap.put(aliases, command);
         }
