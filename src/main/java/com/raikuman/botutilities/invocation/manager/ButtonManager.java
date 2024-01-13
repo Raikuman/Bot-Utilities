@@ -45,7 +45,12 @@ public class ButtonManager {
         // Split component id to get author and invocation
         String[] id = event.getComponentId().split(":");
         if (id.length != 2) {
-            logger.error("Invalid component id: " + event.getComponentId());
+            logger.error("Invalid button component id: " + event.getComponentId());
+            return;
+        }
+
+        // Check author
+        if (!id[0].equals(user.getId())) {
             return;
         }
 

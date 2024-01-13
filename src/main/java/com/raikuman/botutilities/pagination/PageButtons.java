@@ -99,7 +99,7 @@ public class PageButtons {
             Optional<MessageEmbed> messageEmbed = ctx.getMessage().getEmbeds().stream().findFirst();
             if (messageEmbed.isPresent()) {
                 int pageNumber = getPageNumber(messageEmbed.get()) - 1;
-                if (pageNumber == pages.size() - 1) {
+                if (pageNumber >= pages.size()) {
                     pageNumber = 0;
                 } else {
                     pageNumber++;
