@@ -1,5 +1,8 @@
 package com.raikuman.botutilities.invocation.manager;
 
+import com.raikuman.botutilities.config.ConfigData;
+import com.raikuman.botutilities.config.ConfigHandler;
+import com.raikuman.botutilities.defaults.DefaultConfig;
 import com.raikuman.botutilities.defaults.database.DefaultDatabaseHandler;
 import com.raikuman.botutilities.invocation.component.ComponentHandler;
 import com.raikuman.botutilities.invocation.context.CommandContext;
@@ -17,8 +20,11 @@ public class CommandManager {
 
     private static final Logger logger = LoggerFactory.getLogger(CommandManager.class);
     private final HashMap<List<String>, Command> commands;
+    private final boolean disableDatabase;
 
-    public CommandManager(List<Command> commands, ComponentHandler componentHandler) {
+    public CommandManager(List<Command> commands, ComponentHandler componentHandler, boolean disableDatabase) {
+        this.disableDatabase = disableDatabase;
+
         // Process commands to map
         HashMap<List<String>, Command> commandMap = new HashMap<>();
         for (Command command : commands) {
@@ -65,7 +71,12 @@ public class CommandManager {
         }
 
         // Retrieve prefix
-        String prefix = DefaultDatabaseHandler.getPrefix(event.getGuild());
+        String prefix;
+        if (disableDatabase) {
+            prefix = new ConfigData(new DefaultConfig()).getConfig("prefix");
+        } else {
+            prefix = DefaultDatabaseHandler.getPrefix(event.getGuild());
+        }
         if (prefix.isEmpty()) {
             logger.error("Could not retrieve prefix in command handler for guild: " + event.getGuild().getName());
             return;

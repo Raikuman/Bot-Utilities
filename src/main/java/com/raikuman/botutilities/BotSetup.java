@@ -7,6 +7,7 @@ import com.raikuman.botutilities.defaults.database.DatabaseEventListener;
 import com.raikuman.botutilities.defaults.DefaultConfig;
 import com.raikuman.botutilities.defaults.database.DefaultDatabaseStartup;
 import com.raikuman.botutilities.defaults.invocation.Prefix;
+import com.raikuman.botutilities.invocation.component.ComponentHandler;
 import com.raikuman.botutilities.invocation.listener.CommandEventListener;
 import com.raikuman.botutilities.invocation.listener.SlashEventListener;
 import com.raikuman.botutilities.invocation.type.Command;
@@ -32,6 +33,7 @@ public class BotSetup {
     private List<DatabaseStartup> databases;
     private List<Command> commands;
     private List<Slash> slashes;
+    private boolean disableDatabase;
 
     private BotSetup(JDABuilder jdaBuilder) {
         this.jdaBuilder = jdaBuilder;
@@ -39,6 +41,7 @@ public class BotSetup {
         this.databases = new ArrayList<>();
         this.commands = new ArrayList<>();
         this.slashes = new ArrayList<>();
+        this.disableDatabase = false;
 
         // Default thread pool size
         int threadPoolSize = Runtime.getRuntime().availableProcessors() / 4;
@@ -87,6 +90,12 @@ public class BotSetup {
         return this;
     }
 
+    @CheckReturnValue
+    public BotSetup disableDatabase(boolean disable) {
+        this.disableDatabase = disable;
+        return this;
+    }
+
     public ExecutorService getExecutorService() {
         return executor;
     }
@@ -116,19 +125,28 @@ public class BotSetup {
     }
 
     private Object[] buildListeners() {
+        ComponentHandler componentHandler = new ComponentHandler();
+
         List<ListenerAdapter> listeners = new ArrayList<>();
-        listeners.add(new DatabaseEventListener());
+        if (!disableDatabase) {
+            listeners.add(new DatabaseEventListener());
+        }
 
         if (!commands.isEmpty()) {
-            listeners.add(new CommandEventListener(commands, executor));
+            listeners.add(new CommandEventListener(commands, executor, componentHandler, disableDatabase));
         } else {
             logger.info("No commands found, disabling command event listener");
         }
 
         if (!slashes.isEmpty()) {
-            listeners.add(new SlashEventListener(slashes, executor));
+            listeners.add(new SlashEventListener(slashes, executor, componentHandler));
         } else {
             logger.info("No slashes found, disabling slash event listener");
+        }
+
+        if (commands.isEmpty() && slashes.isEmpty()) {
+            logger.info("No commands or slashes found, disabling component event listeners");
+            listeners.addAll(componentHandler.getListeners(executor));
         }
 
         return listeners.toArray();
@@ -140,9 +158,11 @@ public class BotSetup {
         ConfigHandler.writeConfigs(configs);
 
         // Setup databases
-        this.databases.add(new DefaultDatabaseStartup());
-        for (DatabaseStartup database : databases) {
-            database.startup(jda);
+        if (!disableDatabase) {
+            this.databases.add(new DefaultDatabaseStartup());
+            for (DatabaseStartup database : databases) {
+                database.startup(jda);
+            }
         }
     }
 }

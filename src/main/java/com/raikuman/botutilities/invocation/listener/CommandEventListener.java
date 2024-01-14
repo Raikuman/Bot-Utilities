@@ -19,8 +19,9 @@ public class CommandEventListener extends ListenerAdapter {
     private final CommandManager manager;
     private final ExecutorService executor;
 
-    public CommandEventListener(List<Command> commands, ExecutorService executor, ComponentHandler componentHandler) {
-        manager = new CommandManager(commands, componentHandler);
+    public CommandEventListener(List<Command> commands, ExecutorService executor, ComponentHandler componentHandler,
+                                boolean disableDatabase) {
+        manager = new CommandManager(commands, componentHandler, disableDatabase);
         this.executor = executor;
     }
 
