@@ -73,7 +73,7 @@ public class CommandManager {
         // Retrieve prefix
         String prefix;
         if (disableDatabase) {
-            prefix = new ConfigData(new DefaultConfig()).getConfig("prefix");
+            prefix = new ConfigData(new DefaultConfig()).getConfig("defaultprefix");
         } else {
             prefix = DefaultDatabaseHandler.getPrefix(event.getGuild());
         }

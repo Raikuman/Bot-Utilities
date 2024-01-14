@@ -13,21 +13,35 @@ public class ConfigHandler {
     private static final String DEFAULT_CONFIG = "config" + File.separator;
 
     public static void writeConfigs(List<Config> configs) {
+        // Check for config directory
+        if (!new File(DEFAULT_CONFIG).exists()) {
+            if (new File(DEFAULT_CONFIG).mkdir()) {
+                logger.info("Created directory {}", DEFAULT_CONFIG);
+            }
+        }
+
         for (Config config : configs) {
             File configFile = new File(DEFAULT_CONFIG + config.fileName() + ".cfg");
 
             // Config exists...
             if (configFile.exists()) continue;
 
+            // Check for config parent directory
+            if (!configFile.getParentFile().exists()) {
+                if (configFile.getParentFile().mkdir()) {
+                    logger.info("Created directory {}", configFile.getParentFile().getPath());
+                }
+            }
+
             // Create config
             try {
-                if (configFile.getParentFile().mkdirs() && configFile.createNewFile()) {
-                    logger.info("Config file \"" + config.fileName() + "\" created");
+                if (configFile.createNewFile()) {
+                    logger.info("Config file \"{}\" created", config.fileName());
                 } else {
-                    logger.error("Could not create config file \"" + config.fileName() + "\" created");
+                    logger.error("Could not create config file \"{}\"", config.fileName());
                 }
             } catch (IOException e) {
-                logger.error("Error creating config file \"" + config.fileName() + "\"");
+                logger.error("Error creating config file \"{}\"", config.fileName());
                 continue;
             }
 
@@ -37,7 +51,7 @@ public class ConfigHandler {
                     bufferedWriter.write("\n");
                 }
             } catch (IOException e) {
-                logger.error("Error creating config file \"" + config.fileName() + "\"");
+                logger.error("Error creating config file \"{}\"", config.fileName());
             }
         }
     }
