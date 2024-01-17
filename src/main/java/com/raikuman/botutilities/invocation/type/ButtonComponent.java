@@ -11,4 +11,8 @@ public interface ButtonComponent {
     Emoji displayEmoji();
     String displayLabel();
     ButtonStyle buttonStyle();
+
+    default boolean ignoreAuthor() {
+        return false;
+    }
 }

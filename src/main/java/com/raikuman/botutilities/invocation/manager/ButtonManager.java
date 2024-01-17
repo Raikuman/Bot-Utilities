@@ -49,11 +49,6 @@ public class ButtonManager {
             return;
         }
 
-        // Check author
-        if (!id[0].equals(user.getId())) {
-            return;
-        }
-
         // Retrieve button
         ButtonInteraction interaction = interactions.get(user);
         if (interaction == null) {
@@ -63,6 +58,11 @@ public class ButtonManager {
         ButtonComponent button = interaction.buttons.get(id[1]);
         if (button == null) {
             logger.error("Invalid button invocation: " + id[1]);
+            return;
+        }
+
+        // Check author
+        if (!button.ignoreAuthor() && !id[0].equals(user.getId())) {
             return;
         }
 

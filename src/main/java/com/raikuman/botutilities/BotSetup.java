@@ -135,7 +135,7 @@ public class BotSetup {
     private Object[] buildListeners() {
         ComponentHandler componentHandler = new ComponentHandler();
 
-        List<ListenerAdapter> listeners = new ArrayList<>();
+        List<ListenerAdapter> listeners = new ArrayList<>(this.listeners);
         if (!disableDatabase) {
             listeners.add(new DatabaseEventListener());
         }
