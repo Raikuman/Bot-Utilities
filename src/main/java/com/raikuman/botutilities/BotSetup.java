@@ -33,6 +33,7 @@ public class BotSetup {
     private List<DatabaseStartup> databases;
     private List<Command> commands;
     private List<Slash> slashes;
+    private List<ListenerAdapter> listeners;
     private boolean disableDatabase;
 
     private BotSetup(JDABuilder jdaBuilder) {
@@ -41,6 +42,7 @@ public class BotSetup {
         this.databases = new ArrayList<>();
         this.commands = new ArrayList<>();
         this.slashes = new ArrayList<>();
+        this.listeners = new ArrayList<>();
         this.disableDatabase = false;
 
         // Default thread pool size
@@ -66,6 +68,12 @@ public class BotSetup {
     public BotSetup addSlashes(List<Slash> slashes) {
         this.slashes = slashes;
         slashes.add(new Prefix());
+        return this;
+    }
+
+    @CheckReturnValue
+    public BotSetup addListeners(List<ListenerAdapter> listeners) {
+        this.listeners = listeners;
         return this;
     }
 
