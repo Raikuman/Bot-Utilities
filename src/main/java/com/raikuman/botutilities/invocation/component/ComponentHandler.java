@@ -52,8 +52,8 @@ public class ComponentHandler {
     }
 
     private void trimComponents() {
-        int buttonsTrimmed = buttonManager.trimButtons();
-        int selectsTrimmed = selectManager.trimSelects();
+        int buttonsTrimmed = buttonManager.trimButtons(false);
+        int selectsTrimmed = selectManager.trimSelects(false);
 
         if (buttonsTrimmed == 0) {
             logger.info("No components trimmed");

@@ -77,13 +77,13 @@ public class SelectManager {
         interaction.updateInteraction();
     }
 
-    public int trimSelects() {
+    public int trimSelects(boolean trimOnlyDeleted) {
         int amountTrimmed = interactions.size();
 
         for (Map.Entry<User, SelectInteraction> entry : interactions.entrySet()) {
             SelectInteraction selectInteraction = entry.getValue();
 
-            if (ComponentHandler.isTimedOut(selectInteraction.getLastInteraction())) {
+            if (ComponentHandler.isTimedOut(selectInteraction.getLastInteraction()) && !trimOnlyDeleted) {
                 selectInteraction.getMessage().delete().queue();
                 interactions.remove(entry.getKey());
             } else {

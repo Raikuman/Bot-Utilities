@@ -71,13 +71,13 @@ public class ButtonManager {
         interaction.updateInteraction();
     }
 
-    public int trimButtons() {
+    public int trimButtons(boolean trimOnlyDeleted) {
         int amountTrimmed = interactions.size();
 
         for (Map.Entry<User, ButtonInteraction> entry : interactions.entrySet()) {
             ButtonInteraction buttonInteraction = entry.getValue();
 
-            if (ComponentHandler.isTimedOut(buttonInteraction.getLastInteraction())) {
+            if (ComponentHandler.isTimedOut(buttonInteraction.getLastInteraction()) && !trimOnlyDeleted) {
                 buttonInteraction.getMessage().delete().queue();
                 interactions.remove(entry.getKey());
             } else {
