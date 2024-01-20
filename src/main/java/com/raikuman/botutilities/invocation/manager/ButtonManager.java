@@ -21,6 +21,10 @@ public class ButtonManager {
     private static final Logger logger = LoggerFactory.getLogger(ButtonManager.class);
     private final HashMap<User, ButtonInteraction> interactions = new HashMap<>();
 
+    public HashMap<User, ButtonInteraction> getInteractions() {
+        return interactions;
+    }
+
     public void addButtons(User user, Message message, List<ButtonComponent> buttonComponents) {
         HashMap<String, ButtonComponent> buttonMap = new HashMap<>();
         for (ButtonComponent buttonComponent : buttonComponents) {
@@ -101,7 +105,7 @@ public class ButtonManager {
         return amountTrimmed - interactions.size();
     }
 
-    static class ButtonInteraction {
+    public static class ButtonInteraction {
         private final HashMap<String, ButtonComponent> buttons;
         private final Message message;
         private Instant lastInteraction;
@@ -112,16 +116,20 @@ public class ButtonManager {
             this.lastInteraction = lastInteraction;
         }
 
-        public void updateInteraction() {
-            lastInteraction = Instant.now();
+        public HashMap<String, ButtonComponent> getButtons() {
+            return buttons;
+        }
+
+        public Message getMessage() {
+            return message;
         }
 
         public Instant getLastInteraction() {
             return lastInteraction;
         }
 
-        public Message getMessage() {
-            return message;
+        public void updateInteraction() {
+            lastInteraction = Instant.now();
         }
     }
 }

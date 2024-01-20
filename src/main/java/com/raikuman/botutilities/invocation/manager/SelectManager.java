@@ -1,6 +1,7 @@
 package com.raikuman.botutilities.invocation.manager;
 
 import com.raikuman.botutilities.invocation.component.ComponentHandler;
+import com.raikuman.botutilities.invocation.type.ButtonComponent;
 import com.raikuman.botutilities.invocation.type.SelectComponent;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
@@ -20,6 +21,10 @@ public class SelectManager {
 
     private static final Logger logger = LoggerFactory.getLogger(SelectManager.class);
     private final HashMap<User, SelectInteraction> interactions = new HashMap<>();
+
+    public HashMap<User, SelectInteraction> getInteractions() {
+        return interactions;
+    }
 
     public void addSelects(User user, Message message, List<SelectComponent> selectComponents) {
         HashMap<String, SelectComponent> selectMap = new HashMap<>();
@@ -107,7 +112,7 @@ public class SelectManager {
         return amountTrimmed - interactions.size();
     }
 
-    static class SelectInteraction {
+    public static class SelectInteraction {
         private final HashMap<String, SelectComponent> selects;
         private final Message message;
         private Instant lastInteraction;
@@ -118,16 +123,20 @@ public class SelectManager {
             this.lastInteraction = lastInteraction;
         }
 
-        public void updateInteraction() {
-            lastInteraction = Instant.now();
+        public HashMap<String, SelectComponent> getSelects() {
+            return selects;
+        }
+
+        public Message getMessage() {
+            return message;
         }
 
         public Instant getLastInteraction() {
             return lastInteraction;
         }
 
-        public Message getMessage() {
-            return message;
+        public void updateInteraction() {
+            lastInteraction = Instant.now();
         }
     }
 }
