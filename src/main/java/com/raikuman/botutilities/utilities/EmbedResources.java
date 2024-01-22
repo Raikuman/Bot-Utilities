@@ -34,7 +34,7 @@ public class EmbedResources {
                                                 MessageChannelUnion channel, User user) {
         return new EmbedBuilder()
             .setColor(Color.decode(color))
-            .setAuthor(title, user.getAvatarUrl(), user.getAvatarUrl())
+            .setAuthor(title, null, user.getAvatarUrl())
             .setDescription(description)
             .setFooter("#" + channel.getName())
             .setTimestamp(Instant.now());
