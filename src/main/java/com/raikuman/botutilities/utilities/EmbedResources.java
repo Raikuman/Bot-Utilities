@@ -30,7 +30,7 @@ public class EmbedResources {
         );
     }
 
-    private static EmbedBuilder defaultResponse(String color, String title, String description,
+    public static EmbedBuilder defaultResponse(String color, String title, String description,
                                                 MessageChannelUnion channel, User user) {
         return new EmbedBuilder()
             .setColor(Color.decode(color))
