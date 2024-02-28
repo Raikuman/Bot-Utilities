@@ -11,7 +11,7 @@ import java.time.Instant;
 public class EmbedResources {
 
     public static EmbedBuilder error(String title, String description, MessageChannelUnion channel, User user) {
-        return defaultResponse("#C10000", title, "❌" + description, channel, user);
+        return defaultResponse("#C10000", title, "❌ " + description, channel, user);
     }
 
     public static EmbedBuilder success(String title, String description, MessageChannelUnion channel, User user) {
