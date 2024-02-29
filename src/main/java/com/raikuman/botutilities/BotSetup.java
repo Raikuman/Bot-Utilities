@@ -154,6 +154,7 @@ public class BotSetup {
 
         if (commands.isEmpty() && slashes.isEmpty()) {
             logger.info("No commands or slashes found, disabling component event listeners");
+        } else {
             listeners.addAll(componentHandler.getListeners(executor));
         }
 
