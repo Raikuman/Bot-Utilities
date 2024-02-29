@@ -1,7 +1,7 @@
 package com.raikuman.botutilities.invocation.manager;
 
 import com.raikuman.botutilities.invocation.component.ComponentHandler;
-import com.raikuman.botutilities.invocation.type.ButtonComponent;
+import com.raikuman.botutilities.invocation.component.ComponentInteraction;
 import com.raikuman.botutilities.invocation.type.SelectComponent;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
@@ -26,13 +26,13 @@ public class SelectManager {
         return interactions;
     }
 
-    public void addSelects(User user, Message message, List<SelectComponent> selectComponents) {
+    public void addSelects(User user, ComponentInteraction componentInteraction, List<SelectComponent> selectComponents) {
         HashMap<String, SelectComponent> selectMap = new HashMap<>();
         for (SelectComponent selectComponent : selectComponents) {
             selectMap.put(selectComponent.getInvoke(), selectComponent);
         }
 
-        this.interactions.put(user, new SelectInteraction(selectMap, message, Instant.now()));
+        this.interactions.put(user, new SelectInteraction(selectMap, componentInteraction, Instant.now()));
     }
 
     public void handleEvent(StringSelectInteractionEvent event) {
@@ -88,24 +88,31 @@ public class SelectManager {
         for (Map.Entry<User, SelectInteraction> entry : interactions.entrySet()) {
             SelectInteraction selectInteraction = entry.getValue();
 
+            ComponentInteraction interaction = selectInteraction.getComponentInteraction();
             if (ComponentHandler.isTimedOut(selectInteraction.getLastInteraction()) && !trimOnlyDeleted) {
-                selectInteraction.getMessage().delete().queue();
+                if (interaction.message() != null) {
+                    interaction.message().delete().queue();
+                } else if (interaction.hook() != null) {
+                    interaction.hook().deleteOriginal().queue();
+                }
+
                 interactions.remove(entry.getKey());
             } else {
-                // Check if original message was deleted
-                Message message = selectInteraction.getMessage();
-                MessageChannelUnion channel = message.getChannel();
-
-                channel.retrieveMessageById(message.getId()).queue(null, new ErrorHandler() {
-                    @Override
-                    public void accept(Throwable t) {
-                        // Empty handle
-                    }
-                }
-                    .handle(ErrorResponse.UNKNOWN_MESSAGE, (e) -> {
-                        selectInteraction.getMessage().delete().queue();
+                if (interaction.message() != null) {
+                    // Check if original message was deleted
+                    MessageChannelUnion channel = interaction.message().getChannel();
+                    channel.retrieveMessageById(interaction.message().getId()).queue(null, new ErrorHandler() {
+                        @Override
+                        public void accept(Throwable t) {
+                            // Empty handle
+                        }
+                    }.handle(ErrorResponse.UNKNOWN_MESSAGE, (e) -> {
+                        interaction.message().delete().queue();
                         interactions.remove(entry.getKey());
                     }));
+                } else if (interaction.hook() != null && interaction.hook().isExpired()) {
+                    interaction.hook().deleteOriginal().queue();
+                }
             }
         }
 
@@ -114,12 +121,12 @@ public class SelectManager {
 
     public static class SelectInteraction {
         private final HashMap<String, SelectComponent> selects;
-        private final Message message;
+        private final ComponentInteraction componentInteraction;
         private Instant lastInteraction;
 
-        public SelectInteraction(HashMap<String, SelectComponent> selects, Message message, Instant lastInteraction) {
+        public SelectInteraction(HashMap<String, SelectComponent> selects, ComponentInteraction componentInteraction, Instant lastInteraction) {
             this.selects = selects;
-            this.message = message;
+            this.componentInteraction = componentInteraction;
             this.lastInteraction = lastInteraction;
         }
 
@@ -127,8 +134,8 @@ public class SelectManager {
             return selects;
         }
 
-        public Message getMessage() {
-            return message;
+        public ComponentInteraction getComponentInteraction() {
+            return componentInteraction;
         }
 
         public Instant getLastInteraction() {

@@ -9,12 +9,14 @@ import com.raikuman.botutilities.invocation.type.SelectComponent;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.interactions.InteractionHook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -33,11 +35,19 @@ public class ComponentHandler {
     }
 
     public void addButtons(User user, Message message, List<ButtonComponent> buttonComponents) {
-        buttonManager.addButtons(user, message, buttonComponents);
+        buttonManager.addButtons(user, new ComponentInteraction(message, null), buttonComponents);
+    }
+
+    public void addButtons(User user, InteractionHook hook, List<ButtonComponent> buttonComponents) {
+        buttonManager.addButtons(user, new ComponentInteraction(null, hook), buttonComponents);
     }
 
     public void addSelects(User user, Message message, List<SelectComponent> selectComponents) {
-        selectManager.addSelects(user, message, selectComponents);
+        selectManager.addSelects(user, new ComponentInteraction(message, null), selectComponents);
+    }
+
+    public void addSelects(User user, InteractionHook hook, List<SelectComponent> selectComponents) {
+        selectManager.addSelects(user, new ComponentInteraction(null, hook), selectComponents);
     }
 
     public List<ListenerAdapter> getListeners(ExecutorService executor) {

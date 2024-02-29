@@ -1,6 +1,7 @@
 package com.raikuman.botutilities.invocation.manager;
 
 import com.raikuman.botutilities.invocation.component.ComponentHandler;
+import com.raikuman.botutilities.invocation.component.ComponentInteraction;
 import com.raikuman.botutilities.invocation.type.ButtonComponent;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
@@ -12,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.Instant;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,13 +27,13 @@ public class ButtonManager {
         return interactions;
     }
 
-    public void addButtons(User user, Message message, List<ButtonComponent> buttonComponents) {
+    public void addButtons(User user, ComponentInteraction componentInteraction, List<ButtonComponent> buttonComponents) {
         HashMap<String, ButtonComponent> buttonMap = new HashMap<>();
         for (ButtonComponent buttonComponent : buttonComponents) {
             buttonMap.put(buttonComponent.getInvoke(), buttonComponent);
         }
 
-        this.interactions.put(user, new ButtonInteraction(buttonMap, message, Instant.now()));
+        this.interactions.put(user, new ButtonInteraction(buttonMap, componentInteraction, Instant.now()));
     }
 
     public void handleEvent(ButtonInteractionEvent event) {
@@ -81,24 +83,31 @@ public class ButtonManager {
         for (Map.Entry<User, ButtonInteraction> entry : interactions.entrySet()) {
             ButtonInteraction buttonInteraction = entry.getValue();
 
+            ComponentInteraction interaction = buttonInteraction.getComponentInteraction();
             if (ComponentHandler.isTimedOut(buttonInteraction.getLastInteraction()) && !trimOnlyDeleted) {
-                buttonInteraction.getMessage().delete().queue();
+                if (interaction.message() != null) {
+                    interaction.message().delete().queue();
+                } else if (interaction.hook() != null) {
+                    interaction.hook().deleteOriginal().queue();
+                }
+
                 interactions.remove(entry.getKey());
             } else {
-                // Check if original message was deleted
-                Message message = buttonInteraction.getMessage();
-                MessageChannelUnion channel = message.getChannel();
-
-                channel.retrieveMessageById(message.getId()).queue(null, new ErrorHandler() {
-                    @Override
-                    public void accept(Throwable t) {
-                        // Empty handle
-                    }
-                }
-                    .handle(ErrorResponse.UNKNOWN_MESSAGE, (e) -> {
-                        buttonInteraction.getMessage().delete().queue();
+                if (interaction.message() != null) {
+                    // Check if original message was deleted
+                    MessageChannelUnion channel = interaction.message().getChannel();
+                    channel.retrieveMessageById(interaction.message().getId()).queue(null, new ErrorHandler() {
+                        @Override
+                        public void accept(Throwable t) {
+                            // Empty handle
+                        }
+                    }.handle(ErrorResponse.UNKNOWN_MESSAGE, (e) -> {
+                        interaction.message().delete().queue();
                         interactions.remove(entry.getKey());
                     }));
+                } else if (interaction.hook() != null && interaction.hook().isExpired()) {
+                    interaction.hook().deleteOriginal().queue();
+                }
             }
         }
 
@@ -107,12 +116,12 @@ public class ButtonManager {
 
     public static class ButtonInteraction {
         private final HashMap<String, ButtonComponent> buttons;
-        private final Message message;
+        private final ComponentInteraction componentInteraction;
         private Instant lastInteraction;
 
-        public ButtonInteraction(HashMap<String, ButtonComponent> buttons, Message message, Instant lastInteraction) {
+        public ButtonInteraction(HashMap<String, ButtonComponent> buttons, ComponentInteraction componentInteraction, Instant lastInteraction) {
             this.buttons = buttons;
-            this.message = message;
+            this.componentInteraction = componentInteraction;
             this.lastInteraction = lastInteraction;
         }
 
@@ -120,8 +129,8 @@ public class ButtonManager {
             return buttons;
         }
 
-        public Message getMessage() {
-            return message;
+        public ComponentInteraction getComponentInteraction() {
+            return componentInteraction;
         }
 
         public Instant getLastInteraction() {
