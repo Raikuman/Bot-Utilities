@@ -9,9 +9,9 @@ import java.util.List;
 
 public abstract class ButtonPaginationComponent implements ButtonComponent {
 
-    public PaginationPages paginationPages;
+    public Pagination pagination;
 
     public List<EmbedBuilder> updatePages(MessageChannelUnion channel, User user) {
-        return paginationPages.getPages(channel, user);
+        return pagination.getPaginationPages().getPages(channel, user);
     }
 }
