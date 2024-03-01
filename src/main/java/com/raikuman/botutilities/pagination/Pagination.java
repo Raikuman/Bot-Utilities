@@ -317,8 +317,7 @@ public class Pagination {
             }
 
             currentCharacterCount += strings.get(i).length();
-            //if (currentCharacterCount >= charactersPerPage || i == strings.size() - 1) {
-            if (currentCharacterCount >= charactersPerPage) {
+            if (currentCharacterCount >= charactersPerPage || i == strings.size() - 1) {
                 currentCharacterCount = 0;
                 pageBuilder.append("```");
                 pages.add(EmbedResources.defaultResponse(color, title, pageBuilder.toString(), channel, user));
