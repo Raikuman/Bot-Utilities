@@ -51,13 +51,17 @@ public class SlashEventListener extends ListenerAdapter {
         boolean loadGlobal = Boolean.parseBoolean(new ConfigData(new DefaultConfig()).getConfig("globalapp"));
 
         if (loadGlobal) {
-            jda.updateCommands().addCommands(manager.getSlashCommandData()).queue();
-
-            for (Guild guild : jda.getGuilds()) {
-                guild.updateCommands().queue();
-            }
+            loadCommandsGlobal(jda);
         } else {
             loadCommandsLocal(jda);
+        }
+    }
+
+    private void loadCommandsGlobal(JDA jda) {
+        jda.updateCommands().addCommands(manager.getSlashCommandData()).queue();
+
+        for (Guild guild : jda.getGuilds()) {
+            guild.updateCommands().queue();
         }
     }
 
