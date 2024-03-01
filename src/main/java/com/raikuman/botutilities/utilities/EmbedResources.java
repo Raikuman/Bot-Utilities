@@ -11,18 +11,18 @@ import java.time.Instant;
 public class EmbedResources {
 
     public static EmbedBuilder error(String title, String description, MessageChannelUnion channel, User user) {
-        return defaultResponse("#C10000", title, "❌ " + description, channel, user);
+        return defaultResponse(Color.decode("#C10000"), title, "❌ " + description, channel, user);
     }
 
     public static EmbedBuilder success(String title, String description, MessageChannelUnion channel, User user) {
-        return defaultResponse("#04D500", title, "✅ " + description, channel, user);
+        return defaultResponse(Color.decode("#04D500"), title, "✅ " + description, channel, user);
     }
 
     public static EmbedBuilder incorrectUsage(String invoke, String usage, MessageChannelUnion channel) {
         String prefix = DefaultDatabaseHandler.getPrefix(channel.asGuildMessageChannel().getGuild());
 
         return defaultResponse(
-            "#C10000",
+            Color.decode("#C10000"),
             "Incorrect usage for " + prefix + invoke,
             "Usage: `" + prefix + invoke + " " + usage + "`",
             channel,
@@ -30,10 +30,10 @@ public class EmbedResources {
         );
     }
 
-    public static EmbedBuilder defaultResponse(String color, String title, String description,
+    public static EmbedBuilder defaultResponse(Color color, String title, String description,
                                                 MessageChannelUnion channel, User user) {
         return new EmbedBuilder()
-            .setColor(Color.decode(color))
+            .setColor(color)
             .setAuthor(title, null, user.getAvatarUrl())
             .setDescription(description)
             .setFooter("#" + channel.getName())
