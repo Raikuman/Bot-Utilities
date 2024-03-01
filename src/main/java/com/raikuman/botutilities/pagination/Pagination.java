@@ -1,4 +1,4 @@
-package com.raikuman.botutilities.invocation.component.pagination;
+package com.raikuman.botutilities.pagination;
 
 import com.raikuman.botutilities.invocation.component.ComponentBuilder;
 import com.raikuman.botutilities.invocation.component.ComponentHandler;

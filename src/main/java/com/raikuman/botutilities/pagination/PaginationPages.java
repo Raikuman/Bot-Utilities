@@ -1,4 +1,4 @@
-package com.raikuman.botutilities.invocation.component.pagination;
+package com.raikuman.botutilities.pagination;
 
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.User;

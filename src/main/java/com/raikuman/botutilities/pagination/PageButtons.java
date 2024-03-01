@@ -1,4 +1,4 @@
-package com.raikuman.botutilities.invocation.component.pagination;
+package com.raikuman.botutilities.pagination;
 
 import com.raikuman.botutilities.invocation.component.ComponentBuilder;
 import com.raikuman.botutilities.invocation.type.ButtonComponent;
@@ -55,12 +55,13 @@ public class PageButtons {
             buttons.add(new LastMenu(invoke, pagination.getParent(), isDynamic));
         }
 
+        buttons.add(new PageLeft(invoke, pagination, isDynamic));
+
         if (firstPage) {
             // Add first page button
             buttons.add(new FirstPage(invoke, pagination, isDynamic));
         }
 
-        buttons.add(new PageLeft(invoke, pagination, isDynamic));
         buttons.add(new PageRight(invoke, pagination, isDynamic));
         return buttons;
     }
@@ -237,7 +238,7 @@ public class PageButtons {
 
         @Override
         public Emoji displayEmoji() {
-            return Emoji.fromFormatted("↩️");
+            return Emoji.fromFormatted("\uD83D\uDD19");
         }
 
         @Override

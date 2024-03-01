@@ -1,4 +1,4 @@
-package com.raikuman.botutilities.invocation.component.pagination;
+package com.raikuman.botutilities.pagination;
 
 import com.raikuman.botutilities.invocation.type.SelectComponent;
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent;
