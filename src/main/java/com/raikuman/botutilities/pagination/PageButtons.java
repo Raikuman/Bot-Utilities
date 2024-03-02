@@ -9,7 +9,9 @@ import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
+import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
+import net.dv8tion.jda.api.requests.restaction.interactions.MessageEditCallbackAction;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,14 +21,16 @@ public class PageButtons {
 
     private final Pagination pagination;
     private final String invoke;
+    private final int numPages;
     private boolean firstPage, lastMenu, isDynamic;
 
-    public PageButtons(String invoke, Pagination pagination) {
+    public PageButtons(String invoke, Pagination pagination, int numPages) {
         this.firstPage = false;
         this.lastMenu = false;
         this.isDynamic = false;
         this.invoke = invoke;
         this.pagination = pagination;
+        this.numPages = numPages;
     }
 
     public PageButtons setFirstPage(boolean firstPage) {
@@ -44,39 +48,41 @@ public class PageButtons {
         return this;
     }
 
-    public static PageButtons getButtons(String invoke, Pagination pagination) {
-        return new PageButtons(invoke, pagination);
+    public static PageButtons getButtons(String invoke, Pagination pagination, int numPages) {
+        return new PageButtons(invoke, pagination, numPages);
     }
 
     public List<ButtonComponent> build() {
+        boolean isSinglePage = numPages == 1;
+
         List<ButtonComponent> buttons = new ArrayList<>();
         if (lastMenu && pagination.getParent() != null) {
             // Add previous pagination button
             buttons.add(new LastMenu(invoke, pagination.getParent(), isDynamic));
         }
 
-        buttons.add(new PageLeft(invoke, pagination, isDynamic));
+        buttons.add(new PageLeft(invoke, pagination, isDynamic, isSinglePage));
 
         if (firstPage) {
             // Add first page button
-            buttons.add(new FirstPage(invoke, pagination, isDynamic));
+            buttons.add(new FirstPage(invoke, pagination, isDynamic, isSinglePage));
         }
 
-        buttons.add(new PageRight(invoke, pagination, isDynamic));
+        buttons.add(new PageRight(invoke, pagination, isDynamic, isSinglePage));
         return buttons;
     }
 
     static class PageLeft extends ButtonPaginationComponent {
 
-
         private List<EmbedBuilder> pages;
-        private final boolean isDynamic;
+        private final boolean isDynamic, isSinglePage;
         private final String invoke;
 
-        PageLeft(String invoke, Pagination pagination, boolean isDynamic) {
+        PageLeft(String invoke, Pagination pagination, boolean isDynamic, boolean isSinglePage) {
             this.pagination = pagination;
             this.pages = new ArrayList<>();
             this.isDynamic = isDynamic;
+            this.isSinglePage = isSinglePage;
             this.invoke = invoke;
         }
 
@@ -90,13 +96,18 @@ public class PageButtons {
             Optional<MessageEmbed> messageEmbed = ctx.getMessage().getEmbeds().stream().findFirst();
             if (messageEmbed.isPresent()) {
                 int pageNumber = getPageNumber(messageEmbed.get()) - 1;
-                if (pageNumber == 0) {
-                    pageNumber = pages.size() - 1;
-                } else {
+                if (pageNumber != 0) {
                     pageNumber--;
                 }
 
-                ctx.editMessageEmbeds(pages.get(pageNumber).build()).queue();
+                MessageEditCallbackAction callbackAction = ctx.editMessageEmbeds(pages.get(pageNumber).build());
+
+                // Check for looping
+                if (!pagination.getLooping() && pageNumber == 0) {
+                    callbackAction = callbackAction.setComponents(updateButtons(ctx, ctx.getButton()));
+                }
+
+                callbackAction.queue();
             } else {
                 ctx.deferEdit().queue();
             }
@@ -121,18 +132,24 @@ public class PageButtons {
         public ButtonStyle buttonStyle() {
             return ButtonStyle.SECONDARY;
         }
+
+        @Override
+        public boolean isDisabled() {
+            return !pagination.getLooping() || isSinglePage;
+        }
     }
 
     static class PageRight extends ButtonPaginationComponent {
 
         private List<EmbedBuilder> pages;
-        private final boolean isDynamic;
+        private final boolean isDynamic, isSinglePage;
         private final String invoke;
 
-        PageRight(String invoke, Pagination pagination, boolean isDynamic) {
+        PageRight(String invoke, Pagination pagination, boolean isDynamic, boolean isSinglePage) {
             this.pagination = pagination;
             this.pages = new ArrayList<>();
             this.isDynamic = isDynamic;
+            this.isSinglePage = isSinglePage;
             this.invoke = invoke;
         }
 
@@ -152,7 +169,14 @@ public class PageButtons {
                     pageNumber++;
                 }
 
-                ctx.editMessageEmbeds(pages.get(pageNumber).build()).queue();
+                MessageEditCallbackAction callbackAction = ctx.editMessageEmbeds(pages.get(pageNumber).build());
+
+                // Check for looping
+                if (!pagination.getLooping() && pageNumber == pages.size() - 1) {
+                    callbackAction = callbackAction.setComponents(updateButtons(ctx, ctx.getButton()));
+                }
+
+                callbackAction.queue();
             } else {
                 ctx.deferEdit().queue();
             }
@@ -176,6 +200,11 @@ public class PageButtons {
         @Override
         public ButtonStyle buttonStyle() {
             return ButtonStyle.SECONDARY;
+        }
+
+        @Override
+        public boolean isDisabled() {
+            return isSinglePage;
         }
     }
 
@@ -203,9 +232,11 @@ public class PageButtons {
             User user = ctx.getUser();
             List<ButtonComponent> buttons;
             if (pagination.getParent() != null) {
-                buttons = PageButtons.getButtons(invoke, pagination.getParent()).setDynamic(isDynamic).build();
+                buttons =
+                    PageButtons.getButtons(invoke, pagination.getParent(),
+                        pagination.getParent().getPaginationPages().getPages(ctx.getChannel(), ctx.getUser()).size()).setDynamic(isDynamic).build();
             } else {
-                buttons = PageButtons.getButtons(invoke, pagination).setDynamic(isDynamic).build();
+                buttons = PageButtons.getButtons(invoke, pagination, pages.size()).setDynamic(isDynamic).build();
             }
 
             List<ActionRow> actionRows = new ArrayList<>();
@@ -255,13 +286,14 @@ public class PageButtons {
     static class FirstPage extends ButtonPaginationComponent {
 
         private List<EmbedBuilder> pages;
-        private final boolean isDynamic;
+        private final boolean isDynamic, isSinglePage;
         private final String invoke;
 
-        FirstPage(String invoke, Pagination pagination, boolean isDynamic) {
+        FirstPage(String invoke, Pagination pagination, boolean isDynamic, boolean isSinglePage) {
             this.pagination = pagination;
             this.pages = new ArrayList<>();
             this.isDynamic = isDynamic;
+            this.isSinglePage = isSinglePage;
             this.invoke = invoke;
         }
 
@@ -295,6 +327,11 @@ public class PageButtons {
         public ButtonStyle buttonStyle() {
             return ButtonStyle.SECONDARY;
         }
+
+        @Override
+        public boolean isDisabled() {
+            return isSinglePage;
+        }
     }
 
     private static int getPageNumber(MessageEmbed embed) {
@@ -309,5 +346,24 @@ public class PageButtons {
         } catch (NumberFormatException e) {
             return 0;
         }
+    }
+
+    private static List<ActionRow> updateButtons(ButtonInteractionEvent ctx, Button eventButton) {
+        List<ActionRow> actionRows = ctx.getMessage().getActionRows();
+        if (actionRows.isEmpty()) return new ArrayList<>();
+
+        List<Button> buttons = new ArrayList<>();
+        for (Button button : ctx.getMessage().getButtons()) {
+            if (button.equals(eventButton) && !eventButton.isDisabled()) {
+                buttons.add(button.asDisabled());
+            } else {
+                buttons.add(button.asEnabled());
+            }
+        }
+
+        // Buttons will always be on row 1
+        actionRows.set(0, ActionRow.of(buttons));
+
+        return actionRows;
     }
 }

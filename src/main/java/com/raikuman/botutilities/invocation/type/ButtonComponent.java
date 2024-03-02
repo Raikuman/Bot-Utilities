@@ -12,6 +12,9 @@ public interface ButtonComponent {
     String displayLabel();
     ButtonStyle buttonStyle();
 
+    default boolean isDisabled() {
+        return false;
+    }
     default boolean ignoreAuthor() {
         return false;
     }

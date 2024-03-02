@@ -29,7 +29,7 @@ public class Pagination {
     private static final Logger logger = LoggerFactory.getLogger(Pagination.class);
     private final PaginationPages paginationPages;
     private ComponentHandler componentHandler;
-    private boolean isDynamic, hasLastMenu, hasFirstPage;
+    private boolean isDynamic, hasLastMenu, hasFirstPage, isLooping;
     private List<SelectComponent> selects;
     private final String invoke;
     private String placeholder;
@@ -41,6 +41,7 @@ public class Pagination {
         this.isDynamic = false;
         this.hasLastMenu = false;
         this.hasFirstPage = false;
+        this.isLooping = true;
         this.selects = new ArrayList<>();
         this.invoke = invoke;
         this.placeholder = "";
@@ -52,6 +53,7 @@ public class Pagination {
         this.isDynamic = false;
         this.hasLastMenu = false;
         this.hasFirstPage = false;
+        this.isLooping = true;
         this.selects = new ArrayList<>();
         this.invoke = invoke;
         this.placeholder = "";
@@ -69,6 +71,11 @@ public class Pagination {
 
     public Pagination setHasFirstPage(boolean hasFirstPage) {
         this.hasFirstPage = hasFirstPage;
+        return this;
+    }
+
+    public Pagination setLooping(boolean looping) {
+        isLooping = looping;
         return this;
     }
 
@@ -115,6 +122,9 @@ public class Pagination {
     public ComponentHandler getComponentHandler() {
         return componentHandler;
     }
+    public boolean getLooping() {
+        return isLooping;
+    }
 
     public void sendPagination(SlashCommandInteractionEvent ctx) {
         if (componentHandler == null) {
@@ -135,7 +145,7 @@ public class Pagination {
         paginatePages(this, pages, ctx.getChannel(), ctx.getUser());
 
         List<ButtonComponent> buttons = PageButtons
-            .getButtons(invoke, this)
+            .getButtons(invoke, this, pages.size())
             .setDynamic(isDynamic)
             .setLastMenu(hasLastMenu)
             .setFirstPage(hasFirstPage)
@@ -146,7 +156,6 @@ public class Pagination {
         if (!selects.isEmpty()) {
             actionRows.add(ComponentBuilder.buildStringSelectMenu(invoke, placeholder, user, selects));
         }
-
 
         InteractionHook interactionHook = ctx.replyEmbeds(pages.get(0).build()).setComponents(actionRows).complete();
 
@@ -185,7 +194,7 @@ public class Pagination {
         paginatePages(this, pages, ctx.event().getChannel(), ctx.event().getAuthor());
 
         List<ButtonComponent> buttons = PageButtons
-            .getButtons(invoke, this)
+            .getButtons(invoke, this, pages.size())
             .setDynamic(isDynamic)
             .setLastMenu(hasLastMenu)
             .setFirstPage(hasFirstPage)
@@ -238,7 +247,7 @@ public class Pagination {
         paginatePages(this, pages, ctx.getChannel(), ctx.getUser());
 
         List<ButtonComponent> buttons = PageButtons
-            .getButtons(invoke, this)
+            .getButtons(invoke, this, pages.size())
             .setDynamic(isDynamic)
             .setLastMenu(hasLastMenu)
             .setFirstPage(hasFirstPage)

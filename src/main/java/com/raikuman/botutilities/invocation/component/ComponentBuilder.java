@@ -31,11 +31,18 @@ public class ComponentBuilder {
             // Check for style
             if (style == null) style = ButtonStyle.SECONDARY;
 
+            Button button;
             if (emoji == null) {
-                components.add(Button.of(style, buttonId, label));
+                button = Button.of(style, buttonId, label);
             } else {
-                components.add(Button.of(style, buttonId, label, emoji));
+                button = Button.of(style, buttonId, label, emoji);
             }
+
+            if (buttonComponent.isDisabled()) {
+                button = button.asDisabled();
+            }
+
+            components.add(button);
         }
 
         return ActionRow.of(components);
