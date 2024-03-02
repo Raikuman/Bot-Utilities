@@ -11,7 +11,7 @@ public abstract class ButtonPaginationComponent implements ButtonComponent {
 
     public Pagination pagination;
 
-    public List<EmbedBuilder> updatePages(MessageChannelUnion channel, User user) {
-        return pagination.getPaginationPages().getPages(channel, user);
+    public List<EmbedBuilder> updatePages(MessageChannelUnion channel) {
+        return pagination.getPaginationPages().getPages(channel, pagination.getOriginalUser());
     }
 }

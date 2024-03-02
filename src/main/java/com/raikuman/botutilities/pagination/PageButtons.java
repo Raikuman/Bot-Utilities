@@ -89,8 +89,8 @@ public class PageButtons {
         @Override
         public void handle(ButtonInteractionEvent ctx) {
             if (isDynamic || pages.isEmpty()) {
-                pages = updatePages(ctx.getChannel(), ctx.getUser());
-                Pagination.paginatePages(pagination, pages, ctx.getChannel(), ctx.getUser());
+                pages = updatePages(ctx.getChannel());
+                Pagination.paginatePages(pagination, pages, ctx.getChannel(), pagination.getOriginalUser());
             }
 
             Optional<MessageEmbed> messageEmbed = ctx.getMessage().getEmbeds().stream().findFirst();
@@ -158,8 +158,8 @@ public class PageButtons {
         @Override
         public void handle(ButtonInteractionEvent ctx) {
             if (isDynamic || pages.isEmpty()) {
-                pages = updatePages(ctx.getChannel(), ctx.getUser());
-                Pagination.paginatePages(pagination, pages, ctx.getChannel(), ctx.getUser());
+                pages = updatePages(ctx.getChannel());
+                Pagination.paginatePages(pagination, pages, ctx.getChannel(), pagination.getOriginalUser());
             }
 
             Optional<MessageEmbed> messageEmbed = ctx.getMessage().getEmbeds().stream().findFirst();
@@ -226,25 +226,24 @@ public class PageButtons {
         @Override
         public void handle(ButtonInteractionEvent ctx) {
             if (isDynamic || pages.isEmpty()) {
-                pages = updatePages(ctx.getChannel(), ctx.getUser());
-                Pagination.paginatePages(pagination, pages, ctx.getChannel(), ctx.getUser());
+                pages = updatePages(ctx.getChannel());
+                Pagination.paginatePages(pagination, pages, ctx.getChannel(), pagination.getOriginalUser());
             }
 
             // Update components
-            User user = ctx.getUser();
             List<ButtonComponent> buttons;
             if (pagination.getParent() != null) {
                 buttons =
                     PageButtons.getButtons(invoke, pagination.getParent(),
-                        pagination.getParent().getPaginationPages().getPages(ctx.getChannel(), ctx.getUser()).size()).setDynamic(isDynamic).build();
+                        pagination.getParent().getPaginationPages().getPages(ctx.getChannel(), pagination.getOriginalUser()).size()).setDynamic(isDynamic).build();
             } else {
                 buttons = PageButtons.getButtons(invoke, pagination, pages.size()).setDynamic(isDynamic).build();
             }
 
             List<ActionRow> actionRows = new ArrayList<>();
-            actionRows.add(ComponentBuilder.buildButtons(user, buttons));
+            actionRows.add(ComponentBuilder.buildButtons(pagination.getOriginalUser(), buttons));
             if (!pagination.getSelects().isEmpty()) {
-                actionRows.add(ComponentBuilder.buildStringSelectMenu(invoke, pagination.getPlaceholder(), user,
+                actionRows.add(ComponentBuilder.buildStringSelectMenu(invoke, pagination.getPlaceholder(), pagination.getOriginalUser(),
                     pagination.getSelects()));
             }
 
@@ -252,13 +251,13 @@ public class PageButtons {
             InteractionHook interactionHook = ctx.editMessageEmbeds(pages.get(0).build()).setComponents(actionRows).complete();
 
             pagination.getComponentHandler().addButtons(
-                user,
+                pagination.getOriginalUser(),
                 interactionHook,
                 buttons);
 
             if (!pagination.getSelects().isEmpty()) {
                 pagination.getComponentHandler().addSelects(
-                    user,
+                    pagination.getOriginalUser(),
                     interactionHook,
                     pagination.getSelects());
             }
@@ -302,8 +301,8 @@ public class PageButtons {
         @Override
         public void handle(ButtonInteractionEvent ctx) {
             if (isDynamic || pages.isEmpty()) {
-                pages = updatePages(ctx.getChannel(), ctx.getUser());
-                Pagination.paginatePages(pagination, pages, ctx.getChannel(), ctx.getUser());
+                pages = updatePages(ctx.getChannel());
+                Pagination.paginatePages(pagination, pages, ctx.getChannel(), pagination.getOriginalUser());
             }
 
             // Go to first page

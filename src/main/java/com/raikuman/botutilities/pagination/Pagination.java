@@ -34,8 +34,9 @@ public class Pagination {
     private final String invoke;
     private String placeholder;
     private Pagination parent;
+    private final User originalUser;
 
-    public Pagination(String invoke, PaginationPages paginationPages, ComponentHandler componentHandler) {
+    public Pagination(User user, String invoke, PaginationPages paginationPages, ComponentHandler componentHandler) {
         this.paginationPages = paginationPages;
         this.componentHandler = componentHandler;
         this.isDynamic = false;
@@ -45,9 +46,10 @@ public class Pagination {
         this.selects = new ArrayList<>();
         this.invoke = invoke;
         this.placeholder = "";
+        this.originalUser = user;
     }
 
-    public Pagination(String invoke, PaginationPages paginationPages) {
+    public Pagination(User user, String invoke, PaginationPages paginationPages) {
         this.paginationPages = paginationPages;
         this.componentHandler = null;
         this.isDynamic = false;
@@ -57,6 +59,7 @@ public class Pagination {
         this.selects = new ArrayList<>();
         this.invoke = invoke;
         this.placeholder = "";
+        this.originalUser = user;
     }
 
     public Pagination setDynamic(boolean dynamic) {
@@ -122,8 +125,13 @@ public class Pagination {
     public ComponentHandler getComponentHandler() {
         return componentHandler;
     }
+
     public boolean getLooping() {
         return isLooping;
+    }
+
+    public User getOriginalUser() {
+        return originalUser;
     }
 
     public void sendPagination(SlashCommandInteractionEvent ctx) {
@@ -132,12 +140,11 @@ public class Pagination {
             return;
         }
 
-        User user = ctx.getUser();
-        List<EmbedBuilder> pages = paginationPages.getPages(ctx.getChannel(), user);
+        List<EmbedBuilder> pages = paginationPages.getPages(ctx.getChannel(), originalUser);
         if (pages.isEmpty()) {
             ctx.replyEmbeds(
                 EmbedResources.error("Error getting pagination", "Could not get pagination for `" + invoke + "`",
-                    ctx.getChannel(), user).build()
+                    ctx.getChannel(), originalUser).build()
             ).delay(Duration.ofSeconds(10)).flatMap(InteractionHook::deleteOriginal).queue();
             return;
         }
@@ -152,21 +159,21 @@ public class Pagination {
             .build();
 
         List<ActionRow> actionRows = new ArrayList<>();
-        actionRows.add(ComponentBuilder.buildButtons(user, buttons));
+        actionRows.add(ComponentBuilder.buildButtons(originalUser, buttons));
         if (!selects.isEmpty()) {
-            actionRows.add(ComponentBuilder.buildStringSelectMenu(invoke, placeholder, user, selects));
+            actionRows.add(ComponentBuilder.buildStringSelectMenu(invoke, placeholder, originalUser, selects));
         }
 
         InteractionHook interactionHook = ctx.replyEmbeds(pages.get(0).build()).setComponents(actionRows).complete();
 
         componentHandler.addButtons(
-            user,
+            originalUser,
             interactionHook,
             buttons);
 
         if (!selects.isEmpty()) {
             componentHandler.addSelects(
-                user,
+                originalUser,
                 interactionHook,
                 selects);
         }
@@ -179,14 +186,13 @@ public class Pagination {
         }
 
         Message message = ctx.event().getMessage();
-        User user = message.getAuthor();
-        List<EmbedBuilder> pages = paginationPages.getPages(message.getChannel(), user);
+        List<EmbedBuilder> pages = paginationPages.getPages(message.getChannel(), originalUser);
         if (pages.isEmpty()) {
             MessageResources.embedDelete(
                 ctx.event().getChannel(),
                 10,
                 EmbedResources.error("Error getting pagination", "Could not get pagination for `" + invoke + "`",
-                    ctx.event().getChannel(), user)
+                    ctx.event().getChannel(), originalUser)
             );
             return;
         }
@@ -201,22 +207,22 @@ public class Pagination {
             .build();
 
         List<ActionRow> actionRows = new ArrayList<>();
-        actionRows.add(ComponentBuilder.buildButtons(user, buttons));
+        actionRows.add(ComponentBuilder.buildButtons(originalUser, buttons));
         if (!selects.isEmpty()) {
-            actionRows.add(ComponentBuilder.buildStringSelectMenu(invoke, placeholder, user, selects));
+            actionRows.add(ComponentBuilder.buildStringSelectMenu(invoke, placeholder, originalUser, selects));
         }
 
         Message paginationMessage = message.getChannel()
             .sendMessageEmbeds(pages.get(0).build()).setComponents(actionRows).complete();
 
         componentHandler.addButtons(
-            user,
+            originalUser,
             paginationMessage,
             buttons);
 
         if (!selects.isEmpty()) {
             componentHandler.addSelects(
-                user,
+                originalUser,
                 paginationMessage,
                 selects);
         }
@@ -231,20 +237,19 @@ public class Pagination {
         }
 
         Message message = ctx.getMessage();
-        User user = ctx.getUser();
-        List<EmbedBuilder> pages = paginationPages.getPages(message.getChannel(), user);
+        List<EmbedBuilder> pages = paginationPages.getPages(message.getChannel(), originalUser);
         if (pages.isEmpty()) {
             MessageResources.embedDelete(
                 ctx.getChannel(),
                 10,
                 EmbedResources.error("Error getting pagination", "Could not get pagination for `" + invoke + "`",
-                    ctx.getChannel(), user)
+                    ctx.getChannel(), originalUser)
             );
             ctx.deferEdit().queue();
             return;
         }
 
-        paginatePages(this, pages, ctx.getChannel(), ctx.getUser());
+        paginatePages(this, pages, ctx.getChannel(), originalUser);
 
         List<ButtonComponent> buttons = PageButtons
             .getButtons(invoke, this, pages.size())
@@ -254,9 +259,9 @@ public class Pagination {
             .build();
 
         List<ActionRow> actionRows = new ArrayList<>();
-        actionRows.add(ComponentBuilder.buildButtons(user, buttons));
+        actionRows.add(ComponentBuilder.buildButtons(originalUser, buttons));
         if (!selects.isEmpty()) {
-            actionRows.add(ComponentBuilder.buildStringSelectMenu(invoke, placeholder, user, selects));
+            actionRows.add(ComponentBuilder.buildStringSelectMenu(invoke, placeholder, originalUser, selects));
         }
 
         InteractionHook interactionHook = ctx
@@ -265,13 +270,13 @@ public class Pagination {
             .complete();
 
         componentHandler.addButtons(
-            user,
+            originalUser,
             interactionHook,
             buttons);
 
         if (!selects.isEmpty()) {
             componentHandler.addSelects(
-                user,
+                originalUser,
                 interactionHook,
                 selects);
         }

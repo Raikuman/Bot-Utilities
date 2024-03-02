@@ -99,7 +99,7 @@ public class Help extends Slash {
             selectPaginationComponents.add(
                 new SelectPaginationComponent(
                     categoryFormatted,
-                    new Pagination(categoryFormatted, Pagination.buildPages(ctx.getUser(), ctx.getChannel(),
+                    new Pagination(ctx.getUser(), categoryFormatted, Pagination.buildPages(ctx.getUser(), ctx.getChannel(),
                         categoryFormatted, HELP_COLOR, categoryStrings))
                         .setHasLastMenu(true)
                         .setHasFirstPage(true)
@@ -140,7 +140,7 @@ public class Help extends Slash {
             );
         };
 
-        new Pagination(getInvoke(), homePages, componentHandler)
+        new Pagination(ctx.getUser(), getInvoke(), homePages, componentHandler)
             .setPaginationMenu(
                 "View commands in category",
                 selectPaginationComponents.toArray(new SelectPaginationComponent[0])
