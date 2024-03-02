@@ -144,7 +144,7 @@ public class Help extends Slash {
             .setPaginationMenu(
                 "View commands in category",
                 selectPaginationComponents.toArray(new SelectPaginationComponent[0])
-            ).sendPagination(ctx);
+            ).sendPagination(ctx, true);
     }
 
     @Override

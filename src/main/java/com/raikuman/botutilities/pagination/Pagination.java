@@ -146,6 +146,14 @@ public class Pagination {
     }
 
     public void sendPagination(SlashCommandInteractionEvent ctx) {
+        sendSlashPagination(ctx, false);
+    }
+
+    public void sendPagination(SlashCommandInteractionEvent ctx, boolean isEphemeral) {
+        sendSlashPagination(ctx, isEphemeral);
+    }
+
+    private void sendSlashPagination(SlashCommandInteractionEvent ctx, boolean isEphemeral) {
         if (componentHandler == null) {
             logger.error("Pagination has no component handler and will not send pagination");
             return;
@@ -175,7 +183,8 @@ public class Pagination {
             actionRows.add(ComponentBuilder.buildStringSelectMenu(invoke, placeholder, originalUser, selects));
         }
 
-        InteractionHook interactionHook = ctx.replyEmbeds(pages.get(0).build()).setComponents(actionRows).complete();
+        InteractionHook interactionHook =
+            ctx.replyEmbeds(pages.get(0).build()).setComponents(actionRows).setEphemeral(isEphemeral).complete();
 
         componentHandler.addButtons(
             originalUser,
