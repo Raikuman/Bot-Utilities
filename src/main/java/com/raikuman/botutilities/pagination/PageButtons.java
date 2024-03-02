@@ -139,6 +139,11 @@ public class PageButtons {
         public boolean isDisabled() {
             return !pagination.getLooping() || isSinglePage;
         }
+
+        @Override
+        public boolean ignoreAuthor() {
+            return pagination.getIgnoreAuthor();
+        }
     }
 
     static class PageRight extends ButtonPaginationComponent {
@@ -207,6 +212,11 @@ public class PageButtons {
         @Override
         public boolean isDisabled() {
             return isSinglePage;
+        }
+
+        @Override
+        public boolean ignoreAuthor() {
+            return pagination.getIgnoreAuthor();
         }
     }
 
@@ -282,6 +292,11 @@ public class PageButtons {
         public ButtonStyle buttonStyle() {
             return ButtonStyle.SECONDARY;
         }
+
+        @Override
+        public boolean ignoreAuthor() {
+            return pagination.getIgnoreAuthor();
+        }
     }
 
     static class FirstPage extends ButtonPaginationComponent {
@@ -332,6 +347,11 @@ public class PageButtons {
         @Override
         public boolean isDisabled() {
             return isSinglePage;
+        }
+
+        @Override
+        public boolean ignoreAuthor() {
+            return pagination.getIgnoreAuthor();
         }
     }
 

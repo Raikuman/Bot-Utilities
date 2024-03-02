@@ -7,8 +7,16 @@ public class SelectPaginationComponent implements SelectComponent {
 
     private final Pagination pagination;
     private final String label;
+    private final boolean ignoreAuthor;
 
     public SelectPaginationComponent(String label, Pagination pagination) {
+        this.label = label;
+        this.pagination = pagination;
+        this.ignoreAuthor = false;
+    }
+
+    public SelectPaginationComponent(String label, boolean ignoreAuthor, Pagination pagination) {
+        this.ignoreAuthor = ignoreAuthor;
         this.label = label;
         this.pagination = pagination;
     }
@@ -30,5 +38,10 @@ public class SelectPaginationComponent implements SelectComponent {
 
     public Pagination getPagination() {
         return pagination;
+    }
+
+    @Override
+    public boolean ignoreAuthor() {
+        return ignoreAuthor;
     }
 }

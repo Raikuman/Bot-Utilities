@@ -29,7 +29,7 @@ public class Pagination {
     private static final Logger logger = LoggerFactory.getLogger(Pagination.class);
     private final PaginationPages paginationPages;
     private ComponentHandler componentHandler;
-    private boolean isDynamic, hasLastMenu, hasFirstPage, isLooping;
+    private boolean isDynamic, hasLastMenu, hasFirstPage, isLooping, ignoreAuthor;
     private List<SelectComponent> selects;
     private final String invoke;
     private String placeholder;
@@ -43,6 +43,7 @@ public class Pagination {
         this.hasLastMenu = false;
         this.hasFirstPage = false;
         this.isLooping = true;
+        this.ignoreAuthor = false;
         this.selects = new ArrayList<>();
         this.invoke = invoke;
         this.placeholder = "";
@@ -56,6 +57,7 @@ public class Pagination {
         this.hasLastMenu = false;
         this.hasFirstPage = false;
         this.isLooping = true;
+        this.ignoreAuthor = false;
         this.selects = new ArrayList<>();
         this.invoke = invoke;
         this.placeholder = "";
@@ -79,6 +81,11 @@ public class Pagination {
 
     public Pagination setLooping(boolean looping) {
         isLooping = looping;
+        return this;
+    }
+
+    public Pagination setIgnoreAuthor(boolean ignoreAuthor) {
+        this.ignoreAuthor = ignoreAuthor;
         return this;
     }
 
@@ -128,6 +135,10 @@ public class Pagination {
 
     public boolean getLooping() {
         return isLooping;
+    }
+
+    public boolean getIgnoreAuthor() {
+        return ignoreAuthor;
     }
 
     public User getOriginalUser() {
