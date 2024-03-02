@@ -42,8 +42,14 @@ public class SelectManager {
         }
 
         // Check user
-        User user = event.getUser();
-        if (user.isBot()) {
+        User invoker = event.getUser();
+        User originalUser;
+        if (event.getMessage().getInteraction() == null) {
+            originalUser = event.getMessage().getAuthor();
+        } else {
+            originalUser = event.getMessage().getInteraction().getUser();
+        }
+        if (invoker.isBot() || originalUser.isBot()) {
             return;
         }
 
@@ -60,26 +66,33 @@ public class SelectManager {
             return;
         }
 
-        // Check author
-        if (!id[0].equals(user.getId())) {
-            return;
-        }
-
-        // Retrieve select
-        SelectInteraction interaction = interactions.get(user);
+        InteractionComponents interaction = retrieveInteraction(originalUser, invoker, invoke);
         if (interaction == null) {
             return;
         }
 
-        SelectComponent select = interaction.selects.get(invoke);
-        if (select == null) {
-            logger.error("Invalid select invocation: " + invoke);
-            return;
+        interaction.handle(event, invoker.getId(), id[0]);
+    }
+
+    private InteractionComponents retrieveInteraction(User original, User invoker, String selectId) {
+        // Retrieve interaction via invoker
+        SelectInteraction selectInteraction = interactions.get(invoker);
+        if (selectInteraction == null) {
+            // Retrieve interaction via original
+            selectInteraction = interactions.get(original);
+            if (selectInteraction == null) {
+                return null;
+            }
         }
 
-        // Handle select
-        select.handle(event);
-        interaction.updateInteraction();
+        // Retrieve select via interaction
+        SelectComponent selectComponent = selectInteraction.getSelects().get(selectId);
+        if (selectComponent == null) {
+            logger.error("Invalid select invocation: " + selectId);
+            return null;
+        }
+
+        return new InteractionComponents(selectComponent, selectInteraction);
     }
 
     public int trimSelects(boolean trimOnlyDeleted) {
@@ -144,6 +157,27 @@ public class SelectManager {
 
         public void updateInteraction() {
             lastInteraction = Instant.now();
+        }
+    }
+
+    static class InteractionComponents {
+        private final SelectComponent selectComponent;
+        private final SelectInteraction selectInteraction;
+
+        public InteractionComponents(SelectComponent selectComponent, SelectInteraction selectInteraction) {
+            this.selectComponent = selectComponent;
+            this.selectInteraction = selectInteraction;
+        }
+
+        public void handle(StringSelectInteractionEvent event, String selectAuthorId, String invokerId) {
+            // Check author
+            if (!selectComponent.ignoreAuthor() && !selectAuthorId.equals(invokerId)) {
+                return;
+            }
+
+            // Handle select
+            selectComponent.handle(event);
+            selectInteraction.updateInteraction();
         }
     }
 }

@@ -7,4 +7,6 @@ public interface SelectComponent {
     void handle(StringSelectInteractionEvent ctx);
     String getInvoke();
     String displayLabel();
+
+    default boolean ignoreAuthor() { return false; }
 }

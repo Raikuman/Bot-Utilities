@@ -3,7 +3,6 @@ package com.raikuman.botutilities.invocation.manager;
 import com.raikuman.botutilities.invocation.component.ComponentHandler;
 import com.raikuman.botutilities.invocation.component.ComponentInteraction;
 import com.raikuman.botutilities.invocation.type.ButtonComponent;
-import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
@@ -13,7 +12,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.Instant;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -43,8 +41,14 @@ public class ButtonManager {
         }
 
         // Check user
-        User user = event.getUser();
-        if (user.isBot()) {
+        User invoker = event.getUser();
+        User originalUser;
+        if (event.getMessage().getInteraction() == null) {
+            originalUser = event.getMessage().getAuthor();
+        } else {
+            originalUser = event.getMessage().getInteraction().getUser();
+        }
+        if (invoker.isBot() || originalUser.isBot()) {
             return;
         }
 
@@ -55,26 +59,33 @@ public class ButtonManager {
             return;
         }
 
-        // Retrieve button
-        ButtonInteraction interaction = interactions.get(user);
+        InteractionComponents interaction = retrieveInteraction(originalUser, invoker, id[1]);
         if (interaction == null) {
             return;
         }
 
-        ButtonComponent button = interaction.buttons.get(id[1]);
-        if (button == null) {
-            logger.error("Invalid button invocation: " + id[1]);
-            return;
+        interaction.handle(event, invoker.getId(), id[0]);
+    }
+
+    private InteractionComponents retrieveInteraction(User original, User invoker, String buttonId) {
+        // Retrieve interaction via invoker
+        ButtonInteraction buttonInteraction = interactions.get(invoker);
+        if (buttonInteraction == null) {
+            // Retrieve interaction via original
+            buttonInteraction = interactions.get(original);
+            if (buttonInteraction == null) {
+                return null;
+            }
         }
 
-        // Check author
-        if (!button.ignoreAuthor() && !id[0].equals(user.getId())) {
-            return;
+        // Retrieve button via interaction
+        ButtonComponent buttonComponent = buttonInteraction.getButtons().get(buttonId);
+        if (buttonComponent == null) {
+            logger.error("Invalid button id: " + buttonId);
+            return null;
         }
 
-        // Handle button
-        button.handle(event);
-        interaction.updateInteraction();
+        return new InteractionComponents(buttonComponent, buttonInteraction);
     }
 
     public int trimButtons(boolean trimOnlyDeleted) {
@@ -139,6 +150,27 @@ public class ButtonManager {
 
         public void updateInteraction() {
             lastInteraction = Instant.now();
+        }
+    }
+
+    static class InteractionComponents {
+        private final ButtonComponent buttonComponent;
+        private final ButtonInteraction buttonInteraction;
+
+        public InteractionComponents(ButtonComponent buttonComponent, ButtonInteraction buttonInteraction) {
+            this.buttonComponent = buttonComponent;
+            this.buttonInteraction = buttonInteraction;
+        }
+
+        public void handle(ButtonInteractionEvent event, String buttonAuthorId, String invokerId) {
+            // Check author
+            if (!buttonComponent.ignoreAuthor() && !buttonAuthorId.equals(invokerId)) {
+                return;
+            }
+
+            // Handle button
+            buttonComponent.handle(event);
+            buttonInteraction.updateInteraction();
         }
     }
 }
