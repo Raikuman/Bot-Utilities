@@ -168,7 +168,7 @@ public class BotSetup {
 
         // Setup databases
         if (!disableDatabase) {
-            this.databases.add(new DefaultDatabaseStartup());
+            this.databases.add(0, new DefaultDatabaseStartup());
             for (DatabaseStartup database : databases) {
                 database.startup(jda);
             }
