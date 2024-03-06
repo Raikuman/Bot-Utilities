@@ -65,7 +65,7 @@ public class Help extends Slash {
 
             // Retrieve commands in category
             for (Command command : commands) {
-                if (command.getCategory().isEqual(categories.get(i))) {
+                if (command.getCategory() != null && command.getCategory().isEqual(categories.get(i))) {
                     categoryStrings.add(buildInvokeString(
                         guild,
                         false,

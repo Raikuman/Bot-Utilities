@@ -12,6 +12,6 @@ public class Settings implements Category {
 
     @Override
     public Emoji getEmoji() {
-        return Emoji.fromFormatted("⚙\uFE0F");
+        return Emoji.fromFormatted("⚙️");
     }
 }
