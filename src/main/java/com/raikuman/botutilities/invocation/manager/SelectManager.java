@@ -41,15 +41,17 @@ public class SelectManager {
             return;
         }
 
-        // Check user
-        User invoker = event.getUser();
-        User originalUser;
-        if (event.getMessage().getInteraction() == null) {
-            originalUser = event.getMessage().getAuthor();
-        } else {
-            originalUser = event.getMessage().getInteraction().getUser();
+        // Check if bot
+        if (event.getUser().isBot()) {
+            return;
         }
-        if (invoker.isBot() || originalUser.isBot()) {
+
+        // Check user
+        String userId = event.getComponentId().split(":")[0];
+        User originalUser = event.getJDA().getUserById(userId);
+        User invoker = event.getUser();
+        if (originalUser == null) {
+            logger.error("Could not retrieve user from JDA using: " + userId);
             return;
         }
 

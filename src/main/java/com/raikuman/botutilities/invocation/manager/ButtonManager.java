@@ -40,15 +40,23 @@ public class ButtonManager {
             return;
         }
 
-        // Check user
-        User invoker = event.getUser();
-        User originalUser;
-        if (event.getMessage().getInteraction() == null) {
-            originalUser = event.getMessage().getAuthor();
-        } else {
-            originalUser = event.getMessage().getInteraction().getUser();
+        // Check if bot
+        if (event.getUser().isBot()) {
+            return;
         }
-        if (invoker.isBot() || originalUser.isBot()) {
+
+        // Get original user from button id
+        if (event.getButton().getId() == null) {
+            logger.error("Could not find id of button");
+            return;
+        }
+
+        // Check user
+        String userId = event.getButton().getId().split(":")[0];
+        User originalUser = event.getJDA().getUserById(userId);
+        User invoker = event.getUser();
+        if (originalUser == null) {
+            logger.error("Could not retrieve user from JDA using: " + userId);
             return;
         }
 
@@ -165,6 +173,7 @@ public class ButtonManager {
         public void handle(ButtonInteractionEvent event, String buttonAuthorId, String invokerId) {
             // Check author
             if (!buttonComponent.ignoreAuthor() && !buttonAuthorId.equals(invokerId)) {
+                event.deferReply().queue();
                 return;
             }
 
