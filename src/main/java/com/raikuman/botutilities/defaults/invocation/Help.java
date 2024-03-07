@@ -93,7 +93,14 @@ public class Help extends Slash {
                 .append(categoryFormatted)
                 .append("**\n*")
                 .append(numInvokes)
-                .append(" commands*\n");
+                .append(" command");
+
+            // Handle plurality
+            if (numInvokes > 1) {
+                homeBuilder.append("s");
+            }
+
+            homeBuilder.append("*\n");
 
             // Paginate strings
             selectPaginationComponents.add(
