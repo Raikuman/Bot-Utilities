@@ -46,36 +46,68 @@ public class Help extends Slash {
 
             // Retrieve slashes in category
             for (Slash slash : slashes) {
-                if (slash.getCategory() == null) {
+                if (slash.getCategories() == null) {
                     continue;
                 }
 
-                if (slash.getCategory().isEqual(categories.get(i))) {
-                    categoryStrings.add(buildInvokeString(
-                        guild,
-                        true,
-                        slash.getInvoke(),
-                        null,
-                        buildOptionsString(slash.getCommandData().getOptions()),
-                        slash.getDescription()));
+                for (Category category : slash.getCategories()) {
+                    if (category.isEqual(categories.get(i))) {
+                        categoryStrings.add(buildInvokeString(
+                            guild,
+                            true,
+                            slash.getInvoke(),
+                            null,
+                            buildOptionsString(slash.getCommandData().getOptions()),
+                            slash.getDescription()));
 
-                    numInvokes++;
+                        numInvokes++;
+                    }
                 }
+
+//                if (slash.getCategories().isEqual(categories.get(i))) {
+//                    categoryStrings.add(buildInvokeString(
+//                        guild,
+//                        true,
+//                        slash.getInvoke(),
+//                        null,
+//                        buildOptionsString(slash.getCommandData().getOptions()),
+//                        slash.getDescription()));
+//
+//                    numInvokes++;
+//                }
             }
 
             // Retrieve commands in category
             for (Command command : commands) {
-                if (command.getCategory() != null && command.getCategory().isEqual(categories.get(i))) {
-                    categoryStrings.add(buildInvokeString(
-                        guild,
-                        false,
-                        command.getInvoke(),
-                        command.getAliases(),
-                        command.getUsage(),
-                        command.getDescription()));
-
-                    numInvokes++;
+                if (command.getCategories() == null) {
+                    continue;
                 }
+
+                for (Category category : command.getCategories()) {
+                    if (category.isEqual(categories.get(i))) {
+                        categoryStrings.add(buildInvokeString(
+                            guild,
+                            false,
+                            command.getInvoke(),
+                            command.getAliases(),
+                            command.getUsage(),
+                            command.getDescription()));
+
+                        numInvokes++;
+                    }
+                }
+
+//                if (command.getCategories() != null && command.getCategories().isEqual(categories.get(i))) {
+//                    categoryStrings.add(buildInvokeString(
+//                        guild,
+//                        false,
+//                        command.getInvoke(),
+//                        command.getAliases(),
+//                        command.getUsage(),
+//                        command.getDescription()));
+//
+//                    numInvokes++;
+//                }
             }
 
             String categoryFormatted = categories.get(i).getCategory().substring(0, 1).toUpperCase() +
@@ -118,9 +150,9 @@ public class Help extends Slash {
         PaginationPages homePages = (channel, user) -> {
             String prefix = DefaultDatabaseHandler.getPrefix(ctx.getGuild());
 
-            String helpBuilder = "A command that has multiple aliases will be listed with parenthesis.\n***" +
+            String helpBuilder = "A command that has multiple aliases will be listed with brackets.\n***" +
                 prefix +
-                "command (c, com, comm)***\n\n" +
+                "command [c, com, comm]***\n\n" +
                 "A command that requires parameters will be listed with greater/less than symbols.\n***" +
                 prefix +
                 "command <# of things>***\n\n" +
@@ -170,8 +202,8 @@ public class Help extends Slash {
     }
 
     @Override
-    public Category getCategory() {
-        return super.getCategory();
+    public List<Category> getCategories() {
+        return super.getCategories();
     }
 
     private String buildInvokeString(Guild guild, boolean isSlash, String invoke, List<String> aliases, String usage,
@@ -187,7 +219,7 @@ public class Help extends Slash {
         String aliasString = "";
         if (aliases != null && !aliases.isEmpty()) {
             StringBuilder aliasBuilder = new StringBuilder()
-                .append("(");
+                .append("[");
 
             for (int i = 0; i < aliases.size(); i++) {
                 if (i == 0) {
@@ -201,7 +233,7 @@ public class Help extends Slash {
             }
 
             aliasBuilder
-                .append(")");
+                .append("]");
 
             aliasString = String.valueOf(aliasBuilder);
         }

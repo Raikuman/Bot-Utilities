@@ -21,7 +21,7 @@ public abstract class Command {
     public String getDescription() {
         return "";
     }
-    public Category getCategory() {
+    public List<Category> getCategories() {
         return null;
     }
 }

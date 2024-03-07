@@ -18,6 +18,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.time.Duration;
+import java.util.List;
 
 public class Prefix extends Slash {
 
@@ -84,8 +85,8 @@ public class Prefix extends Slash {
     }
 
     @Override
-    public Category getCategory() {
-        return new Settings();
+    public List<Category> getCategories() {
+        return List.of(new Settings());
     }
 
     private boolean updatePrefix(String prefix, Guild guild) {

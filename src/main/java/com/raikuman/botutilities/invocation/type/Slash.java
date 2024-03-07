@@ -3,9 +3,10 @@ package com.raikuman.botutilities.invocation.type;
 import com.raikuman.botutilities.invocation.Category;
 import com.raikuman.botutilities.invocation.component.ComponentHandler;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
-import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
+
+import java.util.List;
 
 public abstract class Slash {
 
@@ -22,5 +23,5 @@ public abstract class Slash {
 
         return Commands.slash(getInvoke(), getDescription());
     }
-    public Category getCategory() { return null; }
+    public List<Category> getCategories() { return null; }
 }
