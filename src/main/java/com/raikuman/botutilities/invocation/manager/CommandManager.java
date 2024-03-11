@@ -82,6 +82,10 @@ public class CommandManager {
             return;
         }
 
+        if (!event.getMessage().getContentRaw().startsWith(prefix)) {
+            return;
+        }
+
         // Split message content
         String[] split = event.getMessage().getContentRaw()
             .replaceFirst(
