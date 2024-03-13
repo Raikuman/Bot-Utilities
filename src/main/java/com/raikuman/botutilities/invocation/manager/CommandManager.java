@@ -1,7 +1,6 @@
 package com.raikuman.botutilities.invocation.manager;
 
 import com.raikuman.botutilities.config.ConfigData;
-import com.raikuman.botutilities.config.ConfigHandler;
 import com.raikuman.botutilities.defaults.DefaultConfig;
 import com.raikuman.botutilities.defaults.database.DefaultDatabaseHandler;
 import com.raikuman.botutilities.invocation.component.ComponentHandler;
@@ -66,7 +65,7 @@ public class CommandManager {
 
         // Check user
         User user = event.getAuthor();
-        if (user.isBot() || event.isWebhookMessage()) {
+        if (event.isWebhookMessage()) {
             return;
         }
 
@@ -97,6 +96,10 @@ public class CommandManager {
         Command command = getCommand(split[0].toLowerCase());
         if (command == null) {
             logger.error("Could not retrieve command from command handler with invoke: " + split[0].toLowerCase());
+            return;
+        }
+
+        if (!command.forBots() && user.isBot()) {
             return;
         }
 

@@ -24,4 +24,7 @@ public abstract class Command {
     public List<Category> getCategories() {
         return null;
     }
+    public boolean forBots() {
+        return false;
+    }
 }
