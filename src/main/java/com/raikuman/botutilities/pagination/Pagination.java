@@ -153,10 +153,10 @@ public class Pagination {
         sendSlashPagination(ctx, isEphemeral);
     }
 
-    private void sendSlashPagination(SlashCommandInteractionEvent ctx, boolean isEphemeral) {
+    private InteractionHook sendSlashPagination(SlashCommandInteractionEvent ctx, boolean isEphemeral) {
         if (componentHandler == null) {
             logger.error("Pagination has no component handler and will not send pagination");
-            return;
+            return null;
         }
 
         List<EmbedBuilder> pages = paginationPages.getPages(ctx.getChannel(), originalUser);
@@ -165,7 +165,7 @@ public class Pagination {
                 EmbedResources.error("Error getting pagination", "Could not get pagination for `" + invoke + "`",
                     ctx.getChannel(), originalUser).build()
             ).delay(Duration.ofSeconds(10)).flatMap(InteractionHook::deleteOriginal).queue();
-            return;
+            return null;
         }
 
         paginatePages(this, pages, ctx.getChannel(), ctx.getUser());
@@ -197,12 +197,14 @@ public class Pagination {
                 interactionHook,
                 selects);
         }
+
+        return interactionHook;
     }
 
-    public void sendPagination(CommandContext ctx) {
+    public Message sendPagination(CommandContext ctx) {
         if (componentHandler == null) {
             logger.error("Pagination has no component handler and will not send pagination");
-            return;
+            return null;
         }
 
         Message message = ctx.event().getMessage();
@@ -214,7 +216,7 @@ public class Pagination {
                 EmbedResources.error("Error getting pagination", "Could not get pagination for `" + invoke + "`",
                     ctx.event().getChannel(), originalUser)
             );
-            return;
+            return null;
         }
 
         paginatePages(this, pages, ctx.event().getChannel(), ctx.event().getAuthor());
@@ -248,12 +250,13 @@ public class Pagination {
         }
 
         ctx.event().getMessage().delete().queue();
+        return paginationMessage;
     }
 
-    public void sendPagination(StringSelectInteractionEvent ctx) {
+    public InteractionHook sendPagination(StringSelectInteractionEvent ctx) {
         if (componentHandler == null) {
             logger.error("Pagination has no component handler and will not send pagination");
-            return;
+            return null;
         }
 
         Message message = ctx.getMessage();
@@ -266,7 +269,7 @@ public class Pagination {
                     ctx.getChannel(), originalUser)
             );
             ctx.deferEdit().queue();
-            return;
+            return null;
         }
 
         paginatePages(this, pages, ctx.getChannel(), originalUser);
@@ -300,6 +303,8 @@ public class Pagination {
                 interactionHook,
                 selects);
         }
+
+        return interactionHook;
     }
 
     public static void paginatePages(Pagination pagination, List<EmbedBuilder> embedBuilders,
