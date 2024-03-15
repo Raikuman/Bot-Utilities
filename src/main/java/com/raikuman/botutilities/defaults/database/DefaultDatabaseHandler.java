@@ -42,7 +42,7 @@ public class DefaultDatabaseHandler {
 
             if (guildId == -1) throw new SQLException("Failed to return guild_id from table");
         } catch (SQLException e) {
-            logger.error("An error occurred adding guild to database for: " + guild.getName() + ":" + guild.getId());
+            logger.error("An error occurred adding guild to database for: {}:{}", guild.getName(), guild.getId());
             return;
         }
 
@@ -55,7 +55,7 @@ public class DefaultDatabaseHandler {
             statement.setInt(1, guildId);
             statement.execute();
         } catch (SQLException e) {
-            logger.error("An error occurred adding settings to database for: " + guild.getName() + ":" + guild.getId());
+            logger.error("An error occurred adding settings to database for: {}:{}", guild.getName(), guild.getId());
             return;
         }
 
@@ -98,7 +98,7 @@ public class DefaultDatabaseHandler {
             statement.setString(1, String.valueOf(guildId));
             statement.execute();
         } catch (SQLException e) {
-            logger.error("An error occurred deleting guild from database for: " + guild.getName() + ":" + guild.getId());
+            logger.error("An error occurred deleting guild from database for: {}:{}", guild.getName(), guild.getId());
         }
     }
 
@@ -122,7 +122,7 @@ public class DefaultDatabaseHandler {
                 }
             }
         } catch (SQLException e) {
-            logger.error("An error occurred adding user to database for: " + user.getEffectiveName() + ":" + user.getId());
+            logger.error("An error occurred adding user to database for: {}:{}", user.getEffectiveName(), user.getId());
         }
 
         return -1;
@@ -142,11 +142,28 @@ public class DefaultDatabaseHandler {
             statement.setInt(1, userId);
             statement.execute();
         } catch (SQLException e) {
-            logger.error("An error occurred deleting user from database for: " + user.getEffectiveName() + ":" + user.getId());
+            logger.error("An error occurred deleting user from database for: {}:{}", user.getEffectiveName(), user.getId());
         }
     }
 
     public static void addMember(Integer guild, Integer user) {
+        try (
+            Connection connection = DatabaseManager.getConnection();
+            PreparedStatement statement = connection.prepareStatement(
+                "SELECT guild_id FROM member WHERE user_id = ?"
+            )) {
+            statement.setInt(1, user);
+            try (ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next()) {
+                    if (resultSet.getInt(1) == guild) {
+                        return;
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            logger.error("An error occurred retrieving user id using guild id for guild: {}, user: {}", guild, user);
+        }
+
         try (
             Connection connection = DatabaseManager.getConnection();
             PreparedStatement statement = connection.prepareStatement(
@@ -156,7 +173,7 @@ public class DefaultDatabaseHandler {
             statement.setInt(2, user);
             statement.execute();
         } catch (SQLException e) {
-            logger.error("An error occurred adding member to database for guild:" + guild + ", user:" + user);
+            logger.error("An error occurred adding member to database for guild: {}, user: {}", guild, user);
         }
     }
 
@@ -170,7 +187,7 @@ public class DefaultDatabaseHandler {
             statement.setInt(2, user);
             statement.execute();
         } catch (SQLException e) {
-            logger.error("An error occurred deleting member from database for guild:" + guild + ", user:" + user);
+            logger.error("An error occurred deleting member from database for guild: {}, user: {}", guild, user);
         }
     }
 
@@ -196,7 +213,7 @@ public class DefaultDatabaseHandler {
                 }
             }
         } catch (SQLException e) {
-            logger.error("An error occurred getting id for: " + id);
+            logger.error("An error occurred getting id for: {}", id);
         }
 
         return -1;
@@ -218,7 +235,7 @@ public class DefaultDatabaseHandler {
                 }
             }
         } catch (SQLException e) {
-            logger.error("An error occurred getting prefix for guild: " + guildId);
+            logger.error("An error occurred getting prefix for guild: {}", guildId);
         }
 
         return "";
