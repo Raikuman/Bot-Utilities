@@ -3,7 +3,6 @@ package com.raikuman.botutilities.invocation.manager;
 import com.raikuman.botutilities.invocation.component.ComponentHandler;
 import com.raikuman.botutilities.invocation.component.ComponentInteraction;
 import com.raikuman.botutilities.invocation.type.SelectComponent;
-import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent;

@@ -31,6 +31,7 @@ public class Pagination {
     private ComponentHandler componentHandler;
     private boolean isDynamic, hasLastMenu, hasFirstPage, isLooping, ignoreAuthor;
     private List<SelectComponent> selects;
+    private List<ButtonComponent> extraButtons;
     private final String invoke;
     private String placeholder;
     private Pagination parent;
@@ -45,6 +46,7 @@ public class Pagination {
         this.isLooping = true;
         this.ignoreAuthor = false;
         this.selects = new ArrayList<>();
+        this.extraButtons = new ArrayList<>();
         this.invoke = invoke;
         this.placeholder = "";
         this.originalUser = user;
@@ -59,6 +61,7 @@ public class Pagination {
         this.isLooping = true;
         this.ignoreAuthor = false;
         this.selects = new ArrayList<>();
+        this.extraButtons = new ArrayList<>();
         this.invoke = invoke;
         this.placeholder = "";
         this.originalUser = user;
@@ -92,6 +95,11 @@ public class Pagination {
     public Pagination setSelectMenu(String placeholder, List<SelectComponent> selects) {
         this.placeholder = placeholder;
         this.selects = selects;
+        return this;
+    }
+
+    public Pagination setExtraButtons(ButtonComponent... extraButtons) {
+        this.extraButtons = List.of(extraButtons);
         return this;
     }
 
@@ -183,6 +191,11 @@ public class Pagination {
             actionRows.add(ComponentBuilder.buildStringSelectMenu(invoke, placeholder, originalUser, selects));
         }
 
+        if (!extraButtons.isEmpty()) {
+            actionRows.add(ComponentBuilder.buildButtons(originalUser, extraButtons));
+            buttons.addAll(extraButtons);
+        }
+
         InteractionHook interactionHook =
             ctx.replyEmbeds(pages.get(0).build()).setComponents(actionRows).setEphemeral(isEphemeral).complete();
 
@@ -232,6 +245,11 @@ public class Pagination {
         actionRows.add(ComponentBuilder.buildButtons(originalUser, buttons));
         if (!selects.isEmpty()) {
             actionRows.add(ComponentBuilder.buildStringSelectMenu(invoke, placeholder, originalUser, selects));
+        }
+
+        if (!extraButtons.isEmpty()) {
+            actionRows.add(ComponentBuilder.buildButtons(originalUser, extraButtons));
+            buttons.addAll(extraButtons);
         }
 
         Message paginationMessage = message.getChannel()
@@ -285,6 +303,11 @@ public class Pagination {
         actionRows.add(ComponentBuilder.buildButtons(originalUser, buttons));
         if (!selects.isEmpty()) {
             actionRows.add(ComponentBuilder.buildStringSelectMenu(invoke, placeholder, originalUser, selects));
+        }
+
+        if (!extraButtons.isEmpty()) {
+            actionRows.add(ComponentBuilder.buildButtons(originalUser, extraButtons));
+            buttons.addAll(extraButtons);
         }
 
         InteractionHook interactionHook = ctx
