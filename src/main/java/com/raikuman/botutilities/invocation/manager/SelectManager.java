@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,9 +21,9 @@ import java.util.Map;
 public class SelectManager {
 
     private static final Logger logger = LoggerFactory.getLogger(SelectManager.class);
-    private final HashMap<User, SelectInteraction> interactions = new HashMap<>();
+    private final HashMap<User, List<SelectInteraction>> interactions = new HashMap<>();
 
-    public HashMap<User, SelectInteraction> getInteractions() {
+    public HashMap<User, List<SelectInteraction>> getInteractions() {
         return interactions;
     }
 
@@ -32,7 +33,8 @@ public class SelectManager {
             selectMap.put(selectComponent.getInvoke(), selectComponent);
         }
 
-        this.interactions.put(user, new SelectInteraction(selectMap, componentInteraction, Instant.now()));
+        this.interactions.computeIfAbsent(user, k -> new ArrayList<>());
+        this.interactions.get(user).add(new SelectInteraction(selectMap, componentInteraction, Instant.now()));
     }
 
     public void handleEvent(StringSelectInteractionEvent event) {
@@ -78,17 +80,26 @@ public class SelectManager {
 
     private InteractionComponents retrieveInteraction(User original, User invoker, String selectId) {
         // Retrieve interaction via invoker
-        SelectInteraction selectInteraction = interactions.get(invoker);
-        if (selectInteraction == null) {
+        List<SelectInteraction> selectInteractions = interactions.get(invoker);
+        if (selectInteractions == null) {
             // Retrieve interaction via original
-            selectInteraction = interactions.get(original);
-            if (selectInteraction == null) {
+            selectInteractions = interactions.get(original);
+            if (selectInteractions == null) {
                 return null;
             }
         }
 
         // Retrieve select via interaction
-        SelectComponent selectComponent = selectInteraction.getSelects().get(selectId);
+        SelectComponent selectComponent = null;
+        SelectInteraction selectInteraction = null;
+        for (SelectInteraction interaction : selectInteractions) {
+            selectComponent = interaction.getSelects().get(selectId);
+            if (selectComponent != null) {
+                selectInteraction = interaction;
+                break;
+            }
+        }
+
         if (selectComponent == null) {
             logger.error("Invalid select invocation: " + selectId);
             return null;
@@ -100,33 +111,33 @@ public class SelectManager {
     public int trimSelects(boolean trimOnlyDeleted) {
         int amountTrimmed = interactions.size();
 
-        for (Map.Entry<User, SelectInteraction> entry : interactions.entrySet()) {
-            SelectInteraction selectInteraction = entry.getValue();
-
-            ComponentInteraction interaction = selectInteraction.getComponentInteraction();
-            if (ComponentHandler.isTimedOut(selectInteraction.getLastInteraction()) && !trimOnlyDeleted) {
-                if (interaction.message() != null) {
-                    interaction.message().delete().queue();
-                } else if (interaction.hook() != null) {
-                    interaction.hook().deleteOriginal().queue();
-                }
-
-                interactions.remove(entry.getKey());
-            } else {
-                if (interaction.message() != null) {
-                    // Check if original message was deleted
-                    MessageChannelUnion channel = interaction.message().getChannel();
-                    channel.retrieveMessageById(interaction.message().getId()).queue(null, new ErrorHandler() {
-                        @Override
-                        public void accept(Throwable t) {
-                            // Empty handle
-                        }
-                    }.handle(ErrorResponse.UNKNOWN_MESSAGE, (e) -> {
+        for (Map.Entry<User, List<SelectInteraction>> entry : interactions.entrySet()) {
+            for (SelectInteraction selectInteraction : entry.getValue()) {
+                ComponentInteraction interaction = selectInteraction.getComponentInteraction();
+                if (ComponentHandler.isTimedOut(selectInteraction.getLastInteraction()) && !trimOnlyDeleted) {
+                    if (interaction.message() != null) {
                         interaction.message().delete().queue();
-                        interactions.remove(entry.getKey());
-                    }));
-                } else if (interaction.hook() != null && interaction.hook().isExpired()) {
-                    interaction.hook().deleteOriginal().queue();
+                    } else if (interaction.hook() != null) {
+                        interaction.hook().deleteOriginal().queue();
+                    }
+
+                    interactions.remove(entry.getKey());
+                } else {
+                    if (interaction.message() != null) {
+                        // Check if original message was deleted
+                        MessageChannelUnion channel = interaction.message().getChannel();
+                        channel.retrieveMessageById(interaction.message().getId()).queue(null, new ErrorHandler() {
+                            @Override
+                            public void accept(Throwable t) {
+                                // Empty handle
+                            }
+                        }.handle(ErrorResponse.UNKNOWN_MESSAGE, (e) -> {
+                            interaction.message().delete().queue();
+                            interactions.remove(entry.getKey());
+                        }));
+                    } else if (interaction.hook() != null && interaction.hook().isExpired()) {
+                        interaction.hook().deleteOriginal().queue();
+                    }
                 }
             }
         }

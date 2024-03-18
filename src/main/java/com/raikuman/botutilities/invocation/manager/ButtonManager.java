@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,9 +20,9 @@ import java.util.Map;
 public class ButtonManager {
 
     private static final Logger logger = LoggerFactory.getLogger(ButtonManager.class);
-    private final HashMap<User, ButtonInteraction> interactions = new HashMap<>();
+    private final HashMap<User, List<ButtonInteraction>> interactions = new HashMap<>();
 
-    public HashMap<User, ButtonInteraction> getInteractions() {
+    public HashMap<User, List<ButtonInteraction>> getInteractions() {
         return interactions;
     }
 
@@ -31,7 +32,8 @@ public class ButtonManager {
             buttonMap.put(buttonComponent.getInvoke(), buttonComponent);
         }
 
-        this.interactions.put(user, new ButtonInteraction(buttonMap, componentInteraction, Instant.now()));
+        this.interactions.computeIfAbsent(user, k -> new ArrayList<>());
+        this.interactions.get(user).add(new ButtonInteraction(buttonMap, componentInteraction, Instant.now()));
     }
 
     public void handleEvent(ButtonInteractionEvent event) {
@@ -77,17 +79,26 @@ public class ButtonManager {
 
     private InteractionComponents retrieveInteraction(User original, User invoker, String buttonId) {
         // Retrieve interaction via invoker
-        ButtonInteraction buttonInteraction = interactions.get(invoker);
-        if (buttonInteraction == null) {
+        List<ButtonInteraction> buttonInteractions = interactions.get(invoker);
+        if (buttonInteractions == null) {
             // Retrieve interaction via original
-            buttonInteraction = interactions.get(original);
-            if (buttonInteraction == null) {
+            buttonInteractions = interactions.get(original);
+            if (buttonInteractions == null) {
                 return null;
             }
         }
 
         // Retrieve button via interaction
-        ButtonComponent buttonComponent = buttonInteraction.getButtons().get(buttonId);
+        ButtonComponent buttonComponent = null;
+        ButtonInteraction buttonInteraction = null;
+        for (ButtonInteraction interaction : buttonInteractions) {
+            buttonComponent = interaction.getButtons().get(buttonId);
+            if (buttonComponent != null) {
+                buttonInteraction = interaction;
+                break;
+            }
+        }
+
         if (buttonComponent == null) {
             logger.error("Invalid button id: " + buttonId);
             return null;
@@ -99,33 +110,33 @@ public class ButtonManager {
     public int trimButtons(boolean trimOnlyDeleted) {
         int amountTrimmed = interactions.size();
 
-        for (Map.Entry<User, ButtonInteraction> entry : interactions.entrySet()) {
-            ButtonInteraction buttonInteraction = entry.getValue();
-
-            ComponentInteraction interaction = buttonInteraction.getComponentInteraction();
-            if (ComponentHandler.isTimedOut(buttonInteraction.getLastInteraction()) && !trimOnlyDeleted) {
-                if (interaction.message() != null) {
-                    interaction.message().delete().queue();
-                } else if (interaction.hook() != null) {
-                    interaction.hook().deleteOriginal().queue();
-                }
-
-                interactions.remove(entry.getKey());
-            } else {
-                if (interaction.message() != null) {
-                    // Check if original message was deleted
-                    MessageChannelUnion channel = interaction.message().getChannel();
-                    channel.retrieveMessageById(interaction.message().getId()).queue(null, new ErrorHandler() {
-                        @Override
-                        public void accept(Throwable t) {
-                            // Empty handle
-                        }
-                    }.handle(ErrorResponse.UNKNOWN_MESSAGE, (e) -> {
+        for (Map.Entry<User, List<ButtonInteraction>> entry : interactions.entrySet()) {
+            for (ButtonInteraction buttonInteraction : entry.getValue()) {
+                ComponentInteraction interaction = buttonInteraction.getComponentInteraction();
+                if (ComponentHandler.isTimedOut(buttonInteraction.getLastInteraction()) && !trimOnlyDeleted) {
+                    if (interaction.message() != null) {
                         interaction.message().delete().queue();
-                        interactions.remove(entry.getKey());
-                    }));
-                } else if (interaction.hook() != null && interaction.hook().isExpired()) {
-                    interaction.hook().deleteOriginal().queue();
+                    } else if (interaction.hook() != null) {
+                        interaction.hook().deleteOriginal().queue();
+                    }
+
+                    interactions.remove(entry.getKey());
+                } else {
+                    if (interaction.message() != null) {
+                        // Check if original message was deleted
+                        MessageChannelUnion channel = interaction.message().getChannel();
+                        channel.retrieveMessageById(interaction.message().getId()).queue(null, new ErrorHandler() {
+                            @Override
+                            public void accept(Throwable t) {
+                                // Empty handle
+                            }
+                        }.handle(ErrorResponse.UNKNOWN_MESSAGE, (e) -> {
+                            interaction.message().delete().queue();
+                            interactions.remove(entry.getKey());
+                        }));
+                    } else if (interaction.hook() != null && interaction.hook().isExpired()) {
+                        interaction.hook().deleteOriginal().queue();
+                    }
                 }
             }
         }
