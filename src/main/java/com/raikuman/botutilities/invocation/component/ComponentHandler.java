@@ -1,10 +1,13 @@
 package com.raikuman.botutilities.invocation.component;
 
 import com.raikuman.botutilities.invocation.listener.ButtonEventListener;
+import com.raikuman.botutilities.invocation.listener.ModalEventListener;
 import com.raikuman.botutilities.invocation.listener.SelectEventListener;
 import com.raikuman.botutilities.invocation.manager.ButtonManager;
+import com.raikuman.botutilities.invocation.manager.ModalManager;
 import com.raikuman.botutilities.invocation.manager.SelectManager;
 import com.raikuman.botutilities.invocation.type.ButtonComponent;
+import com.raikuman.botutilities.invocation.type.ModalComponent;
 import com.raikuman.botutilities.invocation.type.SelectComponent;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
@@ -28,6 +31,7 @@ public class ComponentHandler {
     ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
     private final ButtonManager buttonManager = new ButtonManager();
     private final SelectManager selectManager = new SelectManager();
+    private final ModalManager modalManager = new ModalManager();
     private static final int TRIM_DELAY = 10;
 
     public ComponentHandler() {
@@ -35,25 +39,59 @@ public class ComponentHandler {
     }
 
     public void addButtons(User user, Message message, List<ButtonComponent> buttonComponents) {
+        updateButtonHandlers(buttonComponents);
         buttonManager.addButtons(user, new ComponentInteraction(message, null), buttonComponents);
     }
 
+    public void addButtons(User user, Message message, ButtonComponent... buttonComponents) {
+        List<ButtonComponent> buttonComponentList = List.of(buttonComponents);
+        updateButtonHandlers(buttonComponentList);
+        buttonManager.addButtons(user, new ComponentInteraction(message, null), buttonComponentList);
+    }
+
     public void addButtons(User user, InteractionHook hook, List<ButtonComponent> buttonComponents) {
+        updateButtonHandlers(buttonComponents);
         buttonManager.addButtons(user, new ComponentInteraction(null, hook), buttonComponents);
     }
 
+    public void addButtons(User user, InteractionHook hook, ButtonComponent... buttonComponents) {
+        List<ButtonComponent> buttonComponentList = List.of(buttonComponents);
+        updateButtonHandlers(buttonComponentList);
+        buttonManager.addButtons(user, new ComponentInteraction(null, hook), buttonComponentList);
+    }
+
     public void addSelects(User user, Message message, List<SelectComponent> selectComponents) {
+        updateSelectHandlers(selectComponents);
         selectManager.addSelects(user, new ComponentInteraction(message, null), selectComponents);
     }
 
+    public void addSelects(User user, Message message, SelectComponent... selectComponents) {
+        List<SelectComponent> selectComponentList = List.of(selectComponents);
+        updateSelectHandlers(selectComponentList);
+        selectManager.addSelects(user, new ComponentInteraction(message, null), selectComponentList);
+    }
+
     public void addSelects(User user, InteractionHook hook, List<SelectComponent> selectComponents) {
+        updateSelectHandlers(selectComponents);
         selectManager.addSelects(user, new ComponentInteraction(null, hook), selectComponents);
+    }
+
+    public void addSelects(User user, InteractionHook hook, SelectComponent... selectComponents) {
+        List<SelectComponent> selectComponentList = List.of(selectComponents);
+        updateSelectHandlers(selectComponentList);
+        selectManager.addSelects(user, new ComponentInteraction(null, hook), selectComponentList);
+    }
+
+    public void addModal(ModalComponent modalComponent) {
+        modalComponent.componentHandler = this;
+        modalManager.addModal(modalComponent);
     }
 
     public List<ListenerAdapter> getListeners(ExecutorService executor) {
         return List.of(
             new ButtonEventListener(buttonManager, executor),
-            new SelectEventListener(selectManager, executor)
+            new SelectEventListener(selectManager, executor),
+            new ModalEventListener(modalManager, executor)
         );
     }
 
@@ -89,5 +127,17 @@ public class ComponentHandler {
         }
 
         logger.info(builder.toString());
+    }
+
+    private void updateButtonHandlers(List<ButtonComponent> buttonComponents) {
+        for (ButtonComponent buttonComponent : buttonComponents) {
+            buttonComponent.componentHandler = this;
+        }
+    }
+
+    private void updateSelectHandlers(List<SelectComponent> selectComponents) {
+        for (SelectComponent selectComponent : selectComponents) {
+            selectComponent.componentHandler = this;
+        }
     }
 }

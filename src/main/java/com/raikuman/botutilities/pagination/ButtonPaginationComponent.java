@@ -7,7 +7,7 @@ import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 
 import java.util.List;
 
-public abstract class ButtonPaginationComponent implements ButtonComponent {
+public abstract class ButtonPaginationComponent extends ButtonComponent {
 
     public Pagination pagination;
 

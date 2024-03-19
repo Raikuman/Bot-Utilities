@@ -1,21 +1,23 @@
 package com.raikuman.botutilities.invocation.type;
 
+import com.raikuman.botutilities.invocation.component.ComponentHandler;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
 
-public interface ButtonComponent {
+public abstract class ButtonComponent {
 
-    void handle(ButtonInteractionEvent ctx);
-    String getInvoke();
-    Emoji displayEmoji();
-    String displayLabel();
-    ButtonStyle buttonStyle();
+    public ComponentHandler componentHandler;
+    public abstract void handle(ButtonInteractionEvent ctx);
+    public abstract String getInvoke();
+    public Emoji displayEmoji() { return null; }
+    public abstract String displayLabel();
+    public ButtonStyle buttonStyle() { return ButtonStyle.PRIMARY; }
 
-    default boolean isDisabled() {
+    public boolean isDisabled() {
         return false;
     }
-    default boolean ignoreAuthor() {
+    public boolean ignoreAuthor() {
         return false;
     }
 }

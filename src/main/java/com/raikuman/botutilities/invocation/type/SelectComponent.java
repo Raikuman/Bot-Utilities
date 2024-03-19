@@ -1,12 +1,14 @@
 package com.raikuman.botutilities.invocation.type;
 
+import com.raikuman.botutilities.invocation.component.ComponentHandler;
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent;
 
-public interface SelectComponent {
+public abstract class SelectComponent {
 
-    void handle(StringSelectInteractionEvent ctx);
-    String getInvoke();
-    String displayLabel();
+    public ComponentHandler componentHandler;
+    public abstract void handle(StringSelectInteractionEvent ctx);
+    public abstract String getInvoke();
+    public abstract String displayLabel();
 
-    default boolean ignoreAuthor() { return false; }
+    public boolean ignoreAuthor() { return false; }
 }

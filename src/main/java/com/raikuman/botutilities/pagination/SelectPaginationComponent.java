@@ -3,7 +3,7 @@ package com.raikuman.botutilities.pagination;
 import com.raikuman.botutilities.invocation.type.SelectComponent;
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent;
 
-public class SelectPaginationComponent implements SelectComponent {
+public class SelectPaginationComponent extends SelectComponent {
 
     private final Pagination pagination;
     private final String label;
