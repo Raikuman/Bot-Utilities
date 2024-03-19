@@ -39,23 +39,39 @@ public class ComponentHandler {
     }
 
     public void addButtons(User user, Message message, List<ButtonComponent> buttonComponents) {
+        if (buttonsDisabled(buttonComponents) == buttonComponents.size()) {
+            return;
+        }
+
         updateButtonHandlers(buttonComponents);
         buttonManager.addButtons(user, new ComponentInteraction(message, null), buttonComponents);
     }
 
     public void addButtons(User user, Message message, ButtonComponent... buttonComponents) {
         List<ButtonComponent> buttonComponentList = List.of(buttonComponents);
+        if (buttonsDisabled(buttonComponentList) == buttonComponentList.size()) {
+            return;
+        }
+
         updateButtonHandlers(buttonComponentList);
         buttonManager.addButtons(user, new ComponentInteraction(message, null), buttonComponentList);
     }
 
     public void addButtons(User user, InteractionHook hook, List<ButtonComponent> buttonComponents) {
+        if (buttonsDisabled(buttonComponents) == buttonComponents.size()) {
+            return;
+        }
+
         updateButtonHandlers(buttonComponents);
         buttonManager.addButtons(user, new ComponentInteraction(null, hook), buttonComponents);
     }
 
     public void addButtons(User user, InteractionHook hook, ButtonComponent... buttonComponents) {
         List<ButtonComponent> buttonComponentList = List.of(buttonComponents);
+        if (buttonsDisabled(buttonComponentList) == buttonComponentList.size()) {
+            return;
+        }
+
         updateButtonHandlers(buttonComponentList);
         buttonManager.addButtons(user, new ComponentInteraction(null, hook), buttonComponentList);
     }
@@ -133,6 +149,17 @@ public class ComponentHandler {
         for (ButtonComponent buttonComponent : buttonComponents) {
             buttonComponent.componentHandler = this;
         }
+    }
+
+    private int buttonsDisabled(List<ButtonComponent> buttonComponents) {
+        int numDisabled = 0;
+        for (ButtonComponent buttonComponent : buttonComponents) {
+            if (buttonComponent.isDisabled()) {
+                numDisabled++;
+            }
+        }
+
+        return numDisabled;
     }
 
     private void updateSelectHandlers(List<SelectComponent> selectComponents) {
