@@ -9,7 +9,5 @@ public abstract class ModalComponent {
     public ComponentHandler componentHandler;
     public abstract void handle(ModalInteractionEvent ctx);
     public abstract String getInvoke();
-    public Modal.Builder getAsBuilder(String title) {
-        return Modal.create(getInvoke(), title);
-    }
+    public abstract Modal getModal();
 }
