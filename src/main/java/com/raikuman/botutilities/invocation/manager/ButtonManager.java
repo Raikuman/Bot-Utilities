@@ -184,7 +184,7 @@ public class ButtonManager {
         public void handle(ButtonInteractionEvent event, String buttonAuthorId, String invokerId) {
             // Check author
             if (!buttonComponent.ignoreAuthor() && !buttonAuthorId.equals(invokerId)) {
-                event.deferReply().queue();
+                event.deferEdit().queue();
                 return;
             }
 
