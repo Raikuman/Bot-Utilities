@@ -1,6 +1,7 @@
 package com.raikuman.botutilities;
 
 import com.raikuman.botutilities.config.Config;
+import com.raikuman.botutilities.config.ConfigData;
 import com.raikuman.botutilities.config.ConfigHandler;
 import com.raikuman.botutilities.database.DatabaseStartup;
 import com.raikuman.botutilities.defaults.database.DatabaseEventListener;
@@ -34,7 +35,7 @@ public class BotSetup {
     private List<Command> commands;
     private List<Slash> slashes;
     private List<ListenerAdapter> listeners;
-    private boolean disableDatabase;
+    private boolean disableDatabase, thinDatabase;
 
     private BotSetup(JDABuilder jdaBuilder) {
         this.jdaBuilder = jdaBuilder;
@@ -44,6 +45,7 @@ public class BotSetup {
         this.slashes = new ArrayList<>();
         this.listeners = new ArrayList<>();
         this.disableDatabase = false;
+        this.thinDatabase = false;
 
         // Default thread pool size
         int threadPoolSize = Runtime.getRuntime().availableProcessors() / 4;
@@ -101,6 +103,12 @@ public class BotSetup {
     @CheckReturnValue
     public BotSetup disableDatabase(boolean disable) {
         this.disableDatabase = disable;
+        return this;
+    }
+
+    @CheckReturnValue
+    public BotSetup thinDatabase(boolean thinDatabase) {
+        this.thinDatabase = thinDatabase;
         return this;
     }
 
@@ -168,7 +176,7 @@ public class BotSetup {
 
         // Setup databases
         if (!disableDatabase) {
-            this.databases.add(0, new DefaultDatabaseStartup());
+            this.databases.add(0, new DefaultDatabaseStartup(thinDatabase));
             for (DatabaseStartup database : databases) {
                 database.startup(jda);
             }

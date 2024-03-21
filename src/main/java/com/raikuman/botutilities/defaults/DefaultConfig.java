@@ -16,7 +16,6 @@ public class DefaultConfig implements Config {
         LinkedHashMap<String, String> configMap = new LinkedHashMap<>();
         configMap.put("defaultprefix", "!");
         configMap.put("globalapp", "false");
-        configMap.put("thindatabase", "true");
 
         return configMap;
     }

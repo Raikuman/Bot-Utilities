@@ -16,6 +16,15 @@ import java.sql.Statement;
 public class DefaultDatabaseStartup implements DatabaseStartup {
 
     private static final Logger logger = LoggerFactory.getLogger(DefaultDatabaseStartup.class);
+    private final boolean thinDatabase;
+
+    public DefaultDatabaseStartup() {
+        this.thinDatabase = true;
+    }
+
+    public DefaultDatabaseStartup(boolean thinDatabase) {
+        this.thinDatabase = thinDatabase;
+    }
 
     @Override
     public void startup(JDA jda) {
@@ -49,7 +58,6 @@ public class DefaultDatabaseStartup implements DatabaseStartup {
             );
 
             // Check for thin database
-            boolean thinDatabase = Boolean.parseBoolean(new ConfigData(new DefaultConfig()).getConfig("thindatabase"));
             if (thinDatabase) {
                 statement.executeBatch();
                 connection.close();
