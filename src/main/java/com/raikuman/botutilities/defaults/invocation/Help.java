@@ -63,18 +63,6 @@ public class Help extends Slash {
                         numInvokes++;
                     }
                 }
-
-//                if (slash.getCategories().isEqual(categories.get(i))) {
-//                    categoryStrings.add(buildInvokeString(
-//                        guild,
-//                        true,
-//                        slash.getInvoke(),
-//                        null,
-//                        buildOptionsString(slash.getCommandData().getOptions()),
-//                        slash.getDescription()));
-//
-//                    numInvokes++;
-//                }
             }
 
             // Retrieve commands in category
@@ -96,18 +84,6 @@ public class Help extends Slash {
                         numInvokes++;
                     }
                 }
-
-//                if (command.getCategories() != null && command.getCategories().isEqual(categories.get(i))) {
-//                    categoryStrings.add(buildInvokeString(
-//                        guild,
-//                        false,
-//                        command.getInvoke(),
-//                        command.getAliases(),
-//                        command.getUsage(),
-//                        command.getDescription()));
-//
-//                    numInvokes++;
-//                }
             }
 
             String categoryFormatted = categories.get(i).getCategory().substring(0, 1).toUpperCase() +

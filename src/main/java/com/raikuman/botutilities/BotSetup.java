@@ -1,11 +1,10 @@
 package com.raikuman.botutilities;
 
 import com.raikuman.botutilities.config.Config;
-import com.raikuman.botutilities.config.ConfigData;
 import com.raikuman.botutilities.config.ConfigHandler;
 import com.raikuman.botutilities.database.DatabaseStartup;
-import com.raikuman.botutilities.defaults.database.DatabaseEventListener;
 import com.raikuman.botutilities.defaults.DefaultConfig;
+import com.raikuman.botutilities.defaults.database.DatabaseEventListener;
 import com.raikuman.botutilities.defaults.database.DefaultDatabaseStartup;
 import com.raikuman.botutilities.defaults.invocation.Prefix;
 import com.raikuman.botutilities.invocation.component.ComponentHandler;
@@ -29,6 +28,7 @@ public class BotSetup {
 
     private static final Logger logger = LoggerFactory.getLogger(BotSetup.class);
     private final JDABuilder jdaBuilder;
+    private final ComponentHandler componentHandler;
     private ExecutorService executor;
     private List<Config> configs;
     private List<DatabaseStartup> databases;
@@ -39,6 +39,7 @@ public class BotSetup {
 
     private BotSetup(JDABuilder jdaBuilder) {
         this.jdaBuilder = jdaBuilder;
+        this.componentHandler = new ComponentHandler();
         this.configs = new ArrayList<>();
         this.databases = new ArrayList<>();
         this.commands = new ArrayList<>();
@@ -116,6 +117,10 @@ public class BotSetup {
         return executor;
     }
 
+    public ComponentHandler getComponentHandler() {
+        return componentHandler;
+    }
+
     public JDA build(String token) {
         // Add listeners
         jdaBuilder.addEventListeners(buildListeners());
@@ -141,8 +146,6 @@ public class BotSetup {
     }
 
     private Object[] buildListeners() {
-        ComponentHandler componentHandler = new ComponentHandler();
-
         List<ListenerAdapter> listeners = new ArrayList<>(this.listeners);
         if (!disableDatabase) {
             listeners.add(new DatabaseEventListener());
