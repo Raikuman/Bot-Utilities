@@ -16,7 +16,9 @@ import java.util.List;
 
 public class ComponentBuilder {
 
-    public static ActionRow buildButtons(User user, List<ButtonComponent> buttonComponents) {
+    public static List<ActionRow> buildButtons(User user, List<ButtonComponent> buttonComponents) {
+        List<ActionRow> actionRows = new ArrayList<>();
+
         // Create components
         List<ItemComponent> components = new ArrayList<>();
         for (ButtonComponent buttonComponent : buttonComponents) {
@@ -43,9 +45,17 @@ public class ComponentBuilder {
             }
 
             components.add(button);
+
+            if (components.size() == 5) {
+                actionRows.add(ActionRow.of(components));
+            }
         }
 
-        return ActionRow.of(components);
+        if (!components.isEmpty()) {
+            actionRows.add(ActionRow.of(components));
+        }
+
+        return actionRows;
     }
 
     public static ActionRow buildStringSelectMenu(String invoke, String placeholder, User user,

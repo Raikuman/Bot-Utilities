@@ -251,7 +251,7 @@ public class PageButtons {
             }
 
             List<ActionRow> actionRows = new ArrayList<>();
-            actionRows.add(ComponentBuilder.buildButtons(pagination.getOriginalUser(), buttons));
+            actionRows.addAll(ComponentBuilder.buildButtons(pagination.getOriginalUser(), buttons));
             if (!pagination.getSelects().isEmpty()) {
                 actionRows.add(ComponentBuilder.buildStringSelectMenu(invoke, pagination.getPlaceholder(), pagination.getOriginalUser(),
                     pagination.getSelects()));

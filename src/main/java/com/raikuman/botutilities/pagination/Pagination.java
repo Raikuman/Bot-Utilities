@@ -186,13 +186,13 @@ public class Pagination {
             .build();
 
         List<ActionRow> actionRows = new ArrayList<>();
-        actionRows.add(ComponentBuilder.buildButtons(originalUser, buttons));
+        actionRows.addAll(ComponentBuilder.buildButtons(originalUser, buttons));
         if (!selects.isEmpty()) {
             actionRows.add(ComponentBuilder.buildStringSelectMenu(invoke, placeholder, originalUser, selects));
         }
 
         if (!extraButtons.isEmpty()) {
-            actionRows.add(ComponentBuilder.buildButtons(originalUser, extraButtons));
+            actionRows.addAll(ComponentBuilder.buildButtons(originalUser, extraButtons));
             buttons.addAll(extraButtons);
         }
 
@@ -242,13 +242,13 @@ public class Pagination {
             .build();
 
         List<ActionRow> actionRows = new ArrayList<>();
-        actionRows.add(ComponentBuilder.buildButtons(originalUser, buttons));
+        actionRows.addAll(ComponentBuilder.buildButtons(originalUser, buttons));
         if (!selects.isEmpty()) {
             actionRows.add(ComponentBuilder.buildStringSelectMenu(invoke, placeholder, originalUser, selects));
         }
 
         if (!extraButtons.isEmpty()) {
-            actionRows.add(ComponentBuilder.buildButtons(originalUser, extraButtons));
+            actionRows.addAll(ComponentBuilder.buildButtons(originalUser, extraButtons));
             buttons.addAll(extraButtons);
         }
 
@@ -294,13 +294,13 @@ public class Pagination {
             .build();
 
         List<ActionRow> actionRows = new ArrayList<>();
-        actionRows.add(ComponentBuilder.buildButtons(originalUser, buttons));
+        actionRows.addAll(ComponentBuilder.buildButtons(originalUser, buttons));
         if (!selects.isEmpty()) {
             actionRows.add(ComponentBuilder.buildStringSelectMenu(invoke, placeholder, originalUser, selects));
         }
 
         if (!extraButtons.isEmpty()) {
-            actionRows.add(ComponentBuilder.buildButtons(originalUser, extraButtons));
+            actionRows.addAll(ComponentBuilder.buildButtons(originalUser, extraButtons));
             buttons.addAll(extraButtons);
         }
 
