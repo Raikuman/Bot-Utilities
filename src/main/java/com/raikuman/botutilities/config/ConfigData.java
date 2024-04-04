@@ -6,7 +6,6 @@ import org.slf4j.LoggerFactory;
 import java.io.*;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Objects;
 
 public class ConfigData {
 
@@ -26,10 +25,22 @@ public class ConfigData {
             for (String line; (line = bufferedReader.readLine()) != null;) {
                 configLine = line.replaceAll("\\s+","").split("=");
 
-                // Config incorrect, continue...
-                if (configLine.length != 2) continue;
+                // Check config from file matches config
+                if (configLine.length > 0) {
+                    if (!config.configs().containsKey(configLine[0])) {
+                        continue;
+                    }
+                } else {
+                    continue;
+                }
 
-                configSetup.put(configLine[0], configLine[1]);
+                // Add to config map
+                if (configLine.length == 1) {
+                    // Config without value, add empty
+                    configSetup.put(configLine[0], "");
+                } else if (configLine.length == 2) {
+                    configSetup.put(configLine[0], configLine[1]);
+                }
             }
         } catch (IOException e) {
             logger.error("Error reading config file \"" + config.fileName() + "\"");
@@ -41,7 +52,11 @@ public class ConfigData {
 
     public String getConfig(String config) {
         String foundConfig = configs.get(config);
-        return Objects.requireNonNullElse(foundConfig, "");
+        if (foundConfig != null) {
+            return foundConfig;
+        } else {
+            return null;
+        }
     }
 
     public boolean setConfig(String configLabel, String value) {
