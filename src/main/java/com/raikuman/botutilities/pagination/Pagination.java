@@ -280,12 +280,6 @@ public class Pagination {
         Message message = ctx.getMessage();
         List<EmbedBuilder> pages = paginationPages.getPages(message.getChannel(), originalUser);
         if (pages.isEmpty()) {
-            MessageResources.embedDelete(
-                ctx.getChannel(),
-                10,
-                EmbedResources.error("Error getting pagination", "Could not get pagination for `" + invoke + "`",
-                    ctx.getChannel(), originalUser)
-            );
             ctx.deferEdit().queue();
             return null;
         }
