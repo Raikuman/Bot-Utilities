@@ -80,10 +80,18 @@ public class ConfigHandler {
             logger.error("Could not check config file \"{}\"", config.fileName());
         }
 
-        // Check discrepancies
+        // Check discrepancies remove from file
         boolean discrepancy = false;
         for (Map.Entry<String, String> foundConfig : foundConfigs.entrySet()) {
             if (!config.configs().containsKey(foundConfig.getKey())) {
+                discrepancy = true;
+                break;
+            }
+        }
+
+        // Check discrepancies add to file
+        for (Map.Entry<String, String> dataConfig : config.configs().entrySet()) {
+            if (!foundConfigs.containsKey(dataConfig.getKey())) {
                 discrepancy = true;
                 break;
             }
