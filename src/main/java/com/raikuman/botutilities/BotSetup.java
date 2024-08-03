@@ -134,9 +134,9 @@ public class BotSetup {
         // Connect
         try {
             jda.awaitStatus(JDA.Status.CONNECTED);
-            logger.info("Bot connected to Discord: " + jda);
+            logger.info("Bot connected to Discord: {}", jda);
         } catch (InterruptedException e) {
-            logger.info("Error connecting to Discord: " + jda);
+            logger.info("Error connecting to Discord: {}", jda);
             System.exit(0);
         };
 

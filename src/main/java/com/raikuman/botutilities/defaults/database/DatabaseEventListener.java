@@ -41,8 +41,7 @@ public class DatabaseEventListener extends ListenerAdapter {
         int userId = DefaultDatabaseHandler.addUser(event.getUser());
 
         if (guildId == -1 || userId == -1) {
-            logger.error("An error occurred adding a joining user to guild: " + event.getUser().getEffectiveName() +
-                ":" + event.getUser().getId() + " " + event.getGuild().getName() + ":" + event.getGuild().getId());
+            logger.error("An error occurred adding a joining user to guild: {}:{} {}:{}", event.getUser().getEffectiveName(), event.getUser().getId(), event.getGuild().getName(), event.getGuild().getId());
             return;
         }
 
@@ -55,8 +54,7 @@ public class DatabaseEventListener extends ListenerAdapter {
         int userId = DefaultDatabaseHandler.getUserId(event.getUser());
 
         if (guildId == -1 || userId == -1) {
-            logger.error("An error occurred removing a leaving user from guild: " + event.getUser().getEffectiveName() +
-                ":" + event.getUser().getId() + " " + event.getGuild().getName() + ":" + event.getGuild().getId());
+            logger.error("An error occurred removing a leaving user from guild: {}:{} {}:{}", event.getUser().getEffectiveName(), event.getUser().getId(), event.getGuild().getName(), event.getGuild().getId());
             return;
         }
 

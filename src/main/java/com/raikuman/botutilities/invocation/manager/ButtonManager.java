@@ -58,14 +58,14 @@ public class ButtonManager {
         User originalUser = event.getJDA().getUserById(userId);
         User invoker = event.getUser();
         if (originalUser == null) {
-            logger.error("Could not retrieve user from JDA using: " + userId);
+            logger.error("Could not retrieve user from JDA using: {}", userId);
             return;
         }
 
         // Split component id to get author and invocation
         String[] id = event.getComponentId().split(":");
         if (id.length != 2) {
-            logger.error("Invalid button component id: " + event.getComponentId());
+            logger.error("Invalid button component id: {}", event.getComponentId());
             return;
         }
 
@@ -100,7 +100,7 @@ public class ButtonManager {
         }
 
         if (buttonComponent == null) {
-            logger.error("Invalid button id: " + buttonId);
+            logger.error("Invalid button id: {}", buttonId);
             return null;
         }
 

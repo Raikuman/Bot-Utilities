@@ -52,7 +52,7 @@ public class SelectManager {
         User originalUser = event.getJDA().getUserById(userId);
         User invoker = event.getUser();
         if (originalUser == null) {
-            logger.error("Could not retrieve user from JDA using: " + userId);
+            logger.error("Could not retrieve user from JDA using: {}", userId);
             return;
         }
 
@@ -65,7 +65,7 @@ public class SelectManager {
         // Split component id to get author and invocation
         String[] id = event.getComponentId().split(":");
         if (id.length != 2) {
-            logger.error("Invalid select component id: " + event.getComponentId());
+            logger.error("Invalid select component id: {}", event.getComponentId());
             return;
         }
 
@@ -100,7 +100,7 @@ public class SelectManager {
         }
 
         if (selectComponent == null) {
-            logger.error("Invalid select invocation: " + selectId);
+            logger.error("Invalid select invocation: {}", selectId);
             return null;
         }
 

@@ -22,7 +22,7 @@ public class SlashManager {
         for (Slash slash : slashes) {
             // Check for existing invocation
             if (slashMap.containsKey(slash.getInvoke())) {
-                logger.error("Duplicate invocation: " + slash.getInvoke());
+                logger.error("Duplicate invocation: {}", slash.getInvoke());
                 continue;
             }
 
@@ -58,7 +58,7 @@ public class SlashManager {
         // Retrieve slash
         Slash slash = slashes.get(event.getName());
         if (slash == null) {
-            logger.error("Invalid slash invocation: " + event.getName());
+            logger.error("Invalid slash invocation: {}", event.getName());
             return;
         }
 

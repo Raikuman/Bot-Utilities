@@ -32,7 +32,7 @@ public class CommandManager {
             aliases.add(command.getInvoke());
 
             if (commandMap.containsKey(aliases)) {
-                logger.error("Duplicate invocation: " + command.getInvoke());
+                logger.error("Duplicate invocation: {}", command.getInvoke());
                 continue;
             }
 
@@ -77,7 +77,7 @@ public class CommandManager {
             prefix = DefaultDatabaseHandler.getPrefix(event.getGuild());
         }
         if (prefix.isEmpty()) {
-            logger.error("Could not retrieve prefix in command handler for guild: " + event.getGuild().getName());
+            logger.error("Could not retrieve prefix in command handler for guild: {}", event.getGuild().getName());
             return;
         }
 
@@ -95,7 +95,7 @@ public class CommandManager {
         // Retrieve command from handler
         Command command = getCommand(split[0].toLowerCase());
         if (command == null) {
-            logger.error("Could not retrieve command from command handler with invoke: " + split[0].toLowerCase());
+            logger.error("Could not retrieve command from command handler with invoke: {}", split[0].toLowerCase());
             return;
         }
 

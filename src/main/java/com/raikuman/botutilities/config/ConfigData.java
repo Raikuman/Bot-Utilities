@@ -43,7 +43,7 @@ public class ConfigData {
                 }
             }
         } catch (IOException e) {
-            logger.error("Error reading config file \"" + config.fileName() + "\"");
+            logger.error("Error reading config file \"{}\"", config.fileName());
             configSetup = new LinkedHashMap<>();
         }
 
@@ -62,7 +62,7 @@ public class ConfigData {
     public boolean setConfig(String configLabel, String value) {
         File configFile = new File(DEFAULT_CONFIG + config.fileName() + ".cfg");
         if (!configFile.exists() || configs.get(configLabel) == null) {
-            logger.error("Error writing to config file \"" + DEFAULT_CONFIG + config.fileName() + "\"");
+            logger.error("Error writing to config file \"{}{}\"", DEFAULT_CONFIG, config.fileName());
             return false;
         }
 
@@ -79,7 +79,7 @@ public class ConfigData {
 
             writer.close();
         } catch (IOException e) {
-            logger.error("Error writing to config file \"" + config.fileName() + "\"");
+            logger.error("Error writing to config file \"{}\"", config.fileName());
             return false;
         }
 
